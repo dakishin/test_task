@@ -28,5 +28,7 @@
         <item>5 minutes</item>
     </string-array>
 
+    <string name="button_start">Start timer</string>
+    <string name="button_stop">Stop timer</string>
 
 </resources>

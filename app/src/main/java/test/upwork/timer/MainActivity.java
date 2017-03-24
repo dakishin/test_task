@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 
@@ -12,7 +13,6 @@ import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
 
 
 public class MainActivity extends AppCompatActivity {
@@ -32,33 +32,48 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.toTime)
     TimePicker toTimePicker;
 
+    @BindView(R.id.startTimerButton)
+    Button startTimerButton;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        initRepeat();
-
-        initFromToTime();
-
-        initPlayInterval();
-
-        initPauseInterval();
-
+        TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
+        initRepeat(timerParameters);
+        initFromToTime(timerParameters);
+        initPlayInterval(timerParameters);
+        initPauseInterval(timerParameters);
+        initStartTimerButton(timerParameters);
     }
 
-    private void initPlayInterval() {
+    private void initStartTimerButton(final TimerParameters timerParameters) {
+        startTimerButton.setText(timerParameters.isRunning ? R.string.button_stop : R.string.button_start);
+        startTimerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timerParameters.isRunning = !timerParameters.isRunning;
+                PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
+
+            }
+        });
+    }
+
+    private void initPlayInterval(final TimerParameters timerParameters) {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
             R.array.play_interval, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         playIntervalSpinner.setAdapter(adapter);
-        playIntervalSpinner.setSelection(0);
+        pauseIntervalSpinner.setSelection(timerParameters.playInterval);
 
         playIntervalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+                timerParameters.playInterval = position;
+                PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
 
             @Override
@@ -68,17 +83,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initPauseInterval() {
+    private void initPauseInterval(final TimerParameters timerParameters) {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
             R.array.pause_interval, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         pauseIntervalSpinner.setAdapter(adapter);
-        pauseIntervalSpinner.setSelection(0);
+        pauseIntervalSpinner.setSelection(timerParameters.pauseInterval);
 
         pauseIntervalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+                timerParameters.pauseInterval = position;
+                PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
 
             @Override
@@ -88,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initFromToTime() {
+    private void initFromToTime(TimerParameters timerParameters) {
         Calendar calendar = Calendar.getInstance();
         int hours = calendar.get(Calendar.HOUR_OF_DAY);
         int minutes = calendar.get(Calendar.MINUTE);
@@ -104,17 +120,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void initRepeat() {
+    private void initRepeat(final TimerParameters timerParameters) {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
             R.array.repeat_items, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         repeatSpinner.setAdapter(adapter);
-        repeatSpinner.setSelection(0);
+        repeatSpinner.setSelection(timerParameters.repeatInterval);
 
         repeatSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+                timerParameters.repeatInterval = position;
+                PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
 
             @Override
