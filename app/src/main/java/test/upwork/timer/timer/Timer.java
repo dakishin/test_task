@@ -24,12 +24,12 @@ public class Timer {
         TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(context);
 
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-            timerParameters.getFrom().getTimeInMillis(),
+            timerParameters.getFromCalendar().getTimeInMillis(),
             getPeriod(timerParameters),
             getPendingIntent(context, FromTimeReceiver.class, 0));
 
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-            timerParameters.getTo().getTimeInMillis(),
+            timerParameters.getToCalendar().getTimeInMillis(),
             getPeriod(timerParameters),
             getPendingIntent(context, ToTimeReceiver.class, 1));
 
@@ -53,7 +53,7 @@ public class Timer {
 
 
     private static long getPeriod(TimerParameters timerParameters) {
-        switch (timerParameters.playInterval) {
+        switch (timerParameters.playIntervalMillis) {
             case 0:
                 return TimeUnit.HOURS.toMillis(24);
             case 1:

@@ -16,19 +16,19 @@ public class TimerParameters {
     public int toHour = 0;
     public int toMinute = 0;
 
-    public int playInterval = 0;
-    public int pauseInterval = 0;
+    public int playIntervalMillis = 0;
+    public int pauseIntervalMillis = 0;
     public String soundFileName;
 
 
-    public Calendar getFrom() {
+    public Calendar getFromCalendar() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, fromHour);
         calendar.set(Calendar.MINUTE, fromMinute);
         return calendar;
     }
 
-    public Calendar getTo() {
+    public Calendar getToCalendar() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, toHour);
         calendar.set(Calendar.MINUTE, toMinute);

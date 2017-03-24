@@ -81,12 +81,13 @@ public class MainActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner playIntervalSpinner = (Spinner) findViewById(R.id.play_interval_spinner);
         playIntervalSpinner.setAdapter(adapter);
-        playIntervalSpinner.setSelection(timerParameters.playInterval);
+
+        playIntervalSpinner.setSelection(timerParameters.playIntervalMillis);
 
         playIntervalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                timerParameters.playInterval = position;
+                timerParameters.playIntervalMillis = position;
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
 
@@ -106,12 +107,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         pauseIntervalSpinner.setAdapter(adapter);
-        pauseIntervalSpinner.setSelection(timerParameters.pauseInterval);
+        pauseIntervalSpinner.setSelection(timerParameters.pauseIntervalMillis);
 
         pauseIntervalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                timerParameters.pauseInterval = position;
+                timerParameters.pauseIntervalMillis = position;
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
 
