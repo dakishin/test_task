@@ -106,17 +106,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void initFromToTime(TimerParameters timerParameters) {
         Calendar calendar = Calendar.getInstance();
+
         int hours = calendar.get(Calendar.HOUR_OF_DAY);
         int minutes = calendar.get(Calendar.MINUTE);
 
 
         fromTimePicker.setIs24HourView(true);
-        fromTimePicker.setCurrentHour(hours);
-        fromTimePicker.setCurrentMinute(minutes);
+        fromTimePicker.setCurrentHour(timerParameters.fromHour);
+        fromTimePicker.setCurrentMinute(timerParameters.fromMinute);
 
         toTimePicker.setIs24HourView(true);
-        toTimePicker.setCurrentHour(hours);
-        toTimePicker.setCurrentMinute(minutes);
+        toTimePicker.setCurrentHour(timerParameters.toHour);
+        toTimePicker.setCurrentMinute(timerParameters.toMinute);
 
     }
 
