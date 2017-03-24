@@ -9,7 +9,6 @@
 
 
     <string-array name="play_interval">
-        <item>Endless</item>
         <item>1 minute</item>
         <item>2 minutes</item>
         <item>3 minutes</item>
@@ -19,7 +18,6 @@
 
 
     <string-array name="pause_interval">
-        <item>Without pause</item>
         <item>1 minute</item>
         <item>2 minutes</item>
         <item>3 minutes</item>

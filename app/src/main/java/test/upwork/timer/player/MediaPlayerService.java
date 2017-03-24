@@ -1,6 +1,7 @@
 package test.upwork.timer.player;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
@@ -45,7 +46,18 @@ public class MediaPlayerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         boolean isStart = intent.getBooleanExtra(DO_START, false);
+
+
         if (isStart) {
+
+            registerReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+
+                }
+            }, null);
+
+
             mediaPlayer.start();
         } else {
             mediaPlayer.pause();

@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import test.upwork.timer.PreferencesAdapter;
@@ -22,29 +21,17 @@ public class Timer {
     public static void startAlarm(Context context) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-
         TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(context);
 
-
-        Calendar fromTime = Calendar.getInstance();
-        fromTime.set(Calendar.HOUR_OF_DAY, timerParameters.fromHour);
-        fromTime.set(Calendar.MINUTE, timerParameters.fromMinute);
-
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+            timerParameters.getFrom().getTimeInMillis(),
+            getPeriod(timerParameters),
+            getPendingIntent(context, FromTimeReceiver.class, 0));
 
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-            fromTime.getTimeInMillis(),
+            timerParameters.getTo().getTimeInMillis(),
             getPeriod(timerParameters),
-            getFromTimeIntent(context));
-
-
-        Calendar toTime = Calendar.getInstance();
-        toTime.set(Calendar.HOUR_OF_DAY, timerParameters.toHour);
-        toTime.set(Calendar.MINUTE, timerParameters.toMinute);
-
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-            toTime.getTimeInMillis(),
-            getPeriod(timerParameters),
-            getToTimeIntent(context));
+            getPendingIntent(context, ToTimeReceiver.class, 1));
 
 
         timerParameters.isRunning = true;
@@ -55,7 +42,7 @@ public class Timer {
     public static void stopAlarm(Context context) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
-            alarmManager.cancel(getFromTimeIntent(context));
+            alarmManager.cancel(getPendingIntent(context));
             alarmManager.cancel(getToTimeIntent(context));
         }
         MediaPlayerService.stop(context);
@@ -78,13 +65,10 @@ public class Timer {
     }
 
 
-    private static PendingIntent getFromTimeIntent(Context context) {
-        Intent intent = new Intent(context, FromTimeReceiver.class);
-        return PendingIntent.getBroadcast(context, 0, intent, 0);
+    private static PendingIntent getPendingIntent(Context context, Class receiver, int requestCode) {
+        Intent intent = new Intent(context, receiver);
+        return PendingIntent.getBroadcast(context, requestCode, intent, 0);
     }
 
-    private static PendingIntent getToTimeIntent(Context context) {
-        Intent intent = new Intent(context, ToTimeReceiver.class);
-        return PendingIntent.getBroadcast(context, 0, intent, 0);
-    }
+
 }
