@@ -26,7 +26,7 @@ import java.util.Calendar;
 import test.upwork.timer.FileHelper;
 import test.upwork.timer.PreferencesAdapter;
 import test.upwork.timer.R;
-import test.upwork.timer.timer.Timer;
+import test.upwork.timer.player.MediaPlayerService;
 import test.upwork.timer.timer.TimerParameters;
 import test.upwork.timer.timer.UriUtils;
 
@@ -61,11 +61,11 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 timerParameters.isRunning = isChecked;
                 if (isChecked) {
-//                    MediaPlayerService.start(getApplicationContext());
-                    Timer.startAlarm(getApplicationContext());
+                    MediaPlayerService.start(getApplicationContext());
+//                    Timer.startAlarm(getApplicationContext());
                 } else {
-//                    MediaPlayerService.stop(getApplicationContext());
-                    Timer.stopAlarm(getApplicationContext());
+                    MediaPlayerService.stop(getApplicationContext());
+//                    Timer.stopAlarm(getApplicationContext());
                 }
             }
         });

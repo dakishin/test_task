@@ -42,8 +42,8 @@ public class Timer {
     public static void stopAlarm(Context context) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
-            alarmManager.cancel(getPendingIntent(context));
-            alarmManager.cancel(getToTimeIntent(context));
+            alarmManager.cancel(getPendingIntent(context, FromTimeReceiver.class, 0));
+            alarmManager.cancel(getPendingIntent(context, ToTimeReceiver.class, 1));
         }
         MediaPlayerService.stop(context);
         TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(context);

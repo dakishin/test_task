@@ -1,12 +1,14 @@
 package test.upwork.timer.player;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by dakishin@gmail.com
@@ -16,6 +18,7 @@ public class MediaPlayerService extends Service {
     private static final String TAG = MediaPlayerService.class.getName();
     public static final String DO_START = "DO_START";
     private MediaPlayerAdapter mediaPlayer;
+    private Timer timer;
 
 
     public static void start(Context context) {
@@ -41,34 +44,43 @@ public class MediaPlayerService extends Service {
         super.onCreate();
         mediaPlayer = new MediaPlayerAdapter();
         mediaPlayer.init(getApplicationContext());
+        timer = new Timer();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        boolean isStart = intent.getBooleanExtra(DO_START, false);
-
-
-        if (isStart) {
-
-            registerReceiver(new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-
-                }
-            }, null);
-
-
-            mediaPlayer.start();
-        } else {
-            mediaPlayer.pause();
-        }
+        timer.schedule(createPauseTask(), 5000);
+        mediaPlayer.start();
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    private TimerTask createPauseTask() {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                Log.e(TAG, "pause task");
+                mediaPlayer.pause();
+                timer.schedule(createContinueTask(), 5000);
+            }
+        };
+    }
+
+    private TimerTask createContinueTask() {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                Log.e(TAG, "continue task");
+                mediaPlayer.start();
+                timer.schedule(createPauseTask(), 5000);
+            }
+        };
     }
 
     @Override
     public void onDestroy() {
         Log.e(TAG, "destroy");
         mediaPlayer.stop();
+        timer.cancel();
         super.onDestroy();
     }
 
