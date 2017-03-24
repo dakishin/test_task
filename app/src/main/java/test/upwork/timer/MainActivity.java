@@ -41,7 +41,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
         initRepeat(timerParameters);
         initFromToTime(timerParameters);
@@ -67,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             R.array.play_interval, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         playIntervalSpinner.setAdapter(adapter);
-        pauseIntervalSpinner.setSelection(timerParameters.playInterval);
+        playIntervalSpinner.setSelection(timerParameters.playInterval);
 
         playIntervalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -104,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initFromToTime(TimerParameters timerParameters) {
+    private void initFromToTime(final TimerParameters timerParameters) {
         Calendar calendar = Calendar.getInstance();
 
         int hours = calendar.get(Calendar.HOUR_OF_DAY);
@@ -115,9 +119,28 @@ public class MainActivity extends AppCompatActivity {
         fromTimePicker.setCurrentHour(timerParameters.fromHour);
         fromTimePicker.setCurrentMinute(timerParameters.fromMinute);
 
+        fromTimePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                timerParameters.fromHour=hourOfDay;
+                timerParameters.fromMinute=minute;
+                PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
+
+            }
+        });
+
         toTimePicker.setIs24HourView(true);
         toTimePicker.setCurrentHour(timerParameters.toHour);
         toTimePicker.setCurrentMinute(timerParameters.toMinute);
+
+        toTimePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                timerParameters.toHour=hourOfDay;
+                timerParameters.toMinute=minute;
+                PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
+            }
+        });
 
     }
 
