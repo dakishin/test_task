@@ -4,7 +4,6 @@
     <string-array name="repeat_items">
         <item>Daily</item>
         <item>Weekly</item>
-        <item>Earth</item>
         <item>Monthly</item>
     </string-array>
 

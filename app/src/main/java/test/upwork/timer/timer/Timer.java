@@ -14,7 +14,7 @@ import test.upwork.timer.receiver.AlarmReceiver;
  * Created by dakishin@gmail.com
  */
 
-public class AlarmUtils {
+public class Timer {
 
     public static void startAlarm(Context context) {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -29,8 +29,8 @@ public class AlarmUtils {
 
         alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP,
             calendar.getTimeInMillis(),
-//            getPeriod(timerParameters),
-            3000,
+            getPeriod(timerParameters),
+//            3000,
             alarmIntent);
 
         timerParameters.isRunning = true;

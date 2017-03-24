@@ -14,7 +14,7 @@ import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import test.upwork.timer.timer.AlarmUtils;
+import test.upwork.timer.timer.Timer;
 import test.upwork.timer.timer.PreferencesAdapter;
 import test.upwork.timer.R;
 import test.upwork.timer.timer.TimerParameters;
@@ -66,9 +66,9 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 timerParameters.isRunning = isChecked;
                 if (isChecked) {
-                    AlarmUtils.startAlarm(getApplicationContext());
+                    Timer.startAlarm(getApplicationContext());
                 } else {
-                    AlarmUtils.stopAlarm(getApplicationContext());
+                    Timer.stopAlarm(getApplicationContext());
                 }
             }
         });
