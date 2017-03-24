@@ -124,9 +124,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void initFromToTime(final TimerParameters timerParameters) {
-        Calendar calendar = Calendar.getInstance();
+        final TimePicker fromTimePicker = (TimePicker) findViewById(R.id.fromTime);
+        final TimePicker toTimePicker = (TimePicker) findViewById(R.id.toTime);
 
-        TimePicker fromTimePicker = (TimePicker) findViewById(R.id.fromTime);
+
         fromTimePicker.setIs24HourView(true);
         fromTimePicker.setCurrentHour(timerParameters.fromHour);
         fromTimePicker.setCurrentMinute(timerParameters.fromMinute);
@@ -136,12 +137,18 @@ public class MainActivity extends AppCompatActivity {
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                 timerParameters.fromHour = hourOfDay;
                 timerParameters.fromMinute = minute;
+
+                if (getCalendarFromPicker(fromTimePicker).after(getCalendarFromPicker(toTimePicker))) {
+                    toTimePicker.setCurrentHour(hourOfDay);
+                    toTimePicker.setCurrentMinute(minute);
+                    timerParameters.toHour = hourOfDay;
+                    timerParameters.toMinute = minute;
+                }
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
 
             }
         });
 
-        TimePicker toTimePicker = (TimePicker) findViewById(R.id.toTime);
         toTimePicker.setIs24HourView(true);
         toTimePicker.setCurrentHour(timerParameters.toHour);
         toTimePicker.setCurrentMinute(timerParameters.toMinute);
@@ -151,10 +158,22 @@ public class MainActivity extends AppCompatActivity {
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                 timerParameters.toHour = hourOfDay;
                 timerParameters.toMinute = minute;
+                if (getCalendarFromPicker(fromTimePicker).after(getCalendarFromPicker(toTimePicker))) {
+                    toTimePicker.setCurrentHour(fromTimePicker.getCurrentHour());
+                    timerParameters.toHour = fromTimePicker.getCurrentHour();
+                }
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
         });
 
+    }
+
+
+    private Calendar getCalendarFromPicker(TimePicker timePicker) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, timePicker.getCurrentHour());
+        calendar.set(Calendar.MINUTE, timePicker.getCurrentMinute());
+        return calendar;
     }
 
     private void initRepeat(final TimerParameters timerParameters) {
