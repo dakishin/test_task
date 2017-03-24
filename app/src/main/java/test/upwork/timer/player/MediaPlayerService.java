@@ -15,11 +15,11 @@ import java.util.TimerTask;
  */
 
 public class MediaPlayerService extends Service {
+
     private static final String TAG = MediaPlayerService.class.getName();
     public static final String DO_START = "DO_START";
     private MediaPlayerAdapter mediaPlayer;
-    private Timer timer;
-
+    private Timer timerForPauseAndContinuePlay;
 
     public static void start(Context context) {
         Intent intent = new Intent(context, MediaPlayerService.class);
@@ -33,23 +33,18 @@ public class MediaPlayerService extends Service {
         context.stopService(intent);
     }
 
-    public static void pause(Context context) {
-        Intent intent = new Intent(context, MediaPlayerService.class);
-        intent.putExtra(DO_START, false);
-        context.stopService(intent);
-    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         mediaPlayer = new MediaPlayerAdapter();
         mediaPlayer.init(getApplicationContext());
-        timer = new Timer();
+        timerForPauseAndContinuePlay = new Timer();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        timer.schedule(createPauseTask(), 5000);
+        timerForPauseAndContinuePlay.schedule(createPauseTask(), 5000);
         mediaPlayer.start();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -60,7 +55,7 @@ public class MediaPlayerService extends Service {
             public void run() {
                 Log.e(TAG, "pause task");
                 mediaPlayer.pause();
-                timer.schedule(createContinueTask(), 5000);
+                timerForPauseAndContinuePlay.schedule(createContinueTask(), 5000);
             }
         };
     }
@@ -71,7 +66,7 @@ public class MediaPlayerService extends Service {
             public void run() {
                 Log.e(TAG, "continue task");
                 mediaPlayer.start();
-                timer.schedule(createPauseTask(), 5000);
+                timerForPauseAndContinuePlay.schedule(createPauseTask(), 5000);
             }
         };
     }
@@ -80,7 +75,7 @@ public class MediaPlayerService extends Service {
     public void onDestroy() {
         Log.e(TAG, "destroy");
         mediaPlayer.stop();
-        timer.cancel();
+        timerForPauseAndContinuePlay.cancel();
         super.onDestroy();
     }
 
