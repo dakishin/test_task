@@ -261,7 +261,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private void showChooseFileDialogNative() {
         Intent intent = createGetMp3Intent();
         startActivityForResult(intent, CHOOSE_FILE_RESULT_CODE);
@@ -275,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         return intent;
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -288,10 +288,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 Uri chosenUri = data.getData();
-//                if (!checkIsFileTypeMp3(this, chosenUri) || !checkFileSize(activity, chosenUri)) {
-//                    return;
-//                }
-//                UploadTrimGudokActivity.start(chosenUri, this);
+                TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
+                timerParameters.soundFileUri = chosenUri.toString();
+                PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
                 return;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
