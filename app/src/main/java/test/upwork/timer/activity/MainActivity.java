@@ -1,18 +1,23 @@
-package test.upwork.timer;
+package test.upwork.timer.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import test.upwork.timer.timer.AlarmUtils;
+import test.upwork.timer.timer.PreferencesAdapter;
+import test.upwork.timer.R;
+import test.upwork.timer.timer.TimerParameters;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -32,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.toTime)
     TimePicker toTimePicker;
 
-    @BindView(R.id.startTimerButton)
-    Button startTimerButton;
+    @BindView(R.id.startTimerSwitch)
+    Switch startTimerSwitch;
 
 
     @Override
@@ -55,13 +60,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initStartTimerButton(final TimerParameters timerParameters) {
-        startTimerButton.setText(timerParameters.isRunning ? R.string.button_stop : R.string.button_start);
-        startTimerButton.setOnClickListener(new View.OnClickListener() {
+        startTimerSwitch.setChecked(timerParameters.isRunning);
+        startTimerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                timerParameters.isRunning = !timerParameters.isRunning;
-                PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
-
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                timerParameters.isRunning = isChecked;
+                if (isChecked) {
+                    AlarmUtils.startAlarm(getApplicationContext());
+                } else {
+                    AlarmUtils.stopAlarm(getApplicationContext());
+                }
             }
         });
     }
@@ -122,8 +130,8 @@ public class MainActivity extends AppCompatActivity {
         fromTimePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                timerParameters.fromHour=hourOfDay;
-                timerParameters.fromMinute=minute;
+                timerParameters.fromHour = hourOfDay;
+                timerParameters.fromMinute = minute;
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
 
             }
@@ -136,8 +144,8 @@ public class MainActivity extends AppCompatActivity {
         toTimePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                timerParameters.toHour=hourOfDay;
-                timerParameters.toMinute=minute;
+                timerParameters.toHour = hourOfDay;
+                timerParameters.toMinute = minute;
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
         });

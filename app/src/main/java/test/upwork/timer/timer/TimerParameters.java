@@ -1,4 +1,4 @@
-package test.upwork.timer;
+package test.upwork.timer.timer;
 
 /**
  * Created by dakishin@gmail.com

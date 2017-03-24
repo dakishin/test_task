@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:screenOrientation="landscape"
-            android:name=".MainActivity">
+            android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -22,14 +22,14 @@
         </activity>
 
 
-        <receiver android:name=".SampleBootReceiver"
+        <receiver android:name=".receiver.BootReceiver"
                   android:enabled="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".AlarmReceiver" />
+        <receiver android:name=".receiver.AlarmReceiver" />
 
     </application>
 
