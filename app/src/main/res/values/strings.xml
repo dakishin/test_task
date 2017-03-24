@@ -29,5 +29,7 @@
 
     <string name="button_start">Start timer</string>
     <string name="button_stop">Stop timer</string>
+    <string name="error_select_file">Error during choose file</string>
+    <string name="choose_file">choose file</string>
 
 </resources>

@@ -1,4 +1,4 @@
-package test.upwork.timer.timer;
+package test.upwork.timer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 
 import org.apache.commons.lang3.StringUtils;
+
+import test.upwork.timer.timer.TimerParameters;
 
 /**
  * Created by dakishin@gmail.com

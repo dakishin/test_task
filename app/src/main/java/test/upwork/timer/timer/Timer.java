@@ -8,6 +8,7 @@ import android.content.Intent;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
+import test.upwork.timer.PreferencesAdapter;
 import test.upwork.timer.receiver.AlarmReceiver;
 
 /**
