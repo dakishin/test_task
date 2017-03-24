@@ -21,7 +21,6 @@ import test.upwork.timer.timer.TimerParameters;
 public class MediaPlayerService extends Service {
 
     private static final String TAG = MediaPlayerService.class.getName();
-    public static final String DO_START = "DO_START";
     private MediaPlayerAdapter mediaPlayer;
     private Timer timerForPauseAndContinuePlay;
     private long playInterval;
@@ -29,13 +28,11 @@ public class MediaPlayerService extends Service {
 
     public static void start(Context context) {
         Intent intent = new Intent(context, MediaPlayerService.class);
-        intent.putExtra(DO_START, true);
         context.startService(intent);
     }
 
     public static void stop(Context context) {
         Intent intent = new Intent(context, MediaPlayerService.class);
-        intent.putExtra(DO_START, false);
         context.stopService(intent);
     }
 
