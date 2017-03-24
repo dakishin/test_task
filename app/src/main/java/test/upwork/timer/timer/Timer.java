@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import test.upwork.timer.PreferencesAdapter;
+import test.upwork.timer.player.MediaPlayerService;
 import test.upwork.timer.receiver.FromTimeReceiver;
 import test.upwork.timer.receiver.ToTimeReceiver;
 
@@ -19,8 +20,7 @@ import test.upwork.timer.receiver.ToTimeReceiver;
 public class Timer {
 
     public static void startAlarm(Context context) {
-        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent alarmIntent = getFromTimeIntent(context);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
 
         TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(context);
@@ -31,20 +31,20 @@ public class Timer {
         fromTime.set(Calendar.MINUTE, timerParameters.fromMinute);
 
 
-        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP,
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
             fromTime.getTimeInMillis(),
             getPeriod(timerParameters),
-            alarmIntent);
+            getFromTimeIntent(context));
 
 
         Calendar toTime = Calendar.getInstance();
         toTime.set(Calendar.HOUR_OF_DAY, timerParameters.toHour);
         toTime.set(Calendar.MINUTE, timerParameters.toMinute);
 
-        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP,
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
             toTime.getTimeInMillis(),
             getPeriod(timerParameters),
-            alarmIntent);
+            getToTimeIntent(context));
 
 
         timerParameters.isRunning = true;
@@ -58,6 +58,7 @@ public class Timer {
             alarmManager.cancel(getFromTimeIntent(context));
             alarmManager.cancel(getToTimeIntent(context));
         }
+        MediaPlayerService.stop(context);
         TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(context);
         timerParameters.isRunning = false;
         PreferencesAdapter.saveTimerParameters(context, timerParameters);

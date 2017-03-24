@@ -17,7 +17,7 @@ public class FromTimeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.e(TAG, "alarm received");
+        Log.e(TAG, "FromTimeReceiver");
         MediaPlayerService.start(context);
     }
 }

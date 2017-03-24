@@ -17,7 +17,7 @@ public class ToTimeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.e(TAG, "alarm received");
+        Log.e(TAG, "ToTimeReceiver");
         MediaPlayerService.stop(context);
     }
 }

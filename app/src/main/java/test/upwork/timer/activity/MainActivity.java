@@ -26,7 +26,7 @@ import java.util.Calendar;
 import test.upwork.timer.FileHelper;
 import test.upwork.timer.PreferencesAdapter;
 import test.upwork.timer.R;
-import test.upwork.timer.player.MediaPlayerService;
+import test.upwork.timer.timer.Timer;
 import test.upwork.timer.timer.TimerParameters;
 import test.upwork.timer.timer.UriUtils;
 
@@ -61,11 +61,11 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 timerParameters.isRunning = isChecked;
                 if (isChecked) {
-                    MediaPlayerService.start(getApplicationContext());
-//                    Timer.startAlarm(getApplicationContext());
+//                    MediaPlayerService.start(getApplicationContext());
+                    Timer.startAlarm(getApplicationContext());
                 } else {
-                    MediaPlayerService.stop(getApplicationContext());
-//                    Timer.stopAlarm(getApplicationContext());
+//                    MediaPlayerService.stop(getApplicationContext());
+                    Timer.stopAlarm(getApplicationContext());
                 }
             }
         });
@@ -137,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                 timerParameters.fromHour = hourOfDay;
                 timerParameters.fromMinute = minute;
-
                 if (getCalendarFromPicker(fromTimePicker).after(getCalendarFromPicker(toTimePicker))) {
                     toTimePicker.setCurrentHour(hourOfDay);
                     toTimePicker.setCurrentMinute(minute);
@@ -160,7 +159,9 @@ public class MainActivity extends AppCompatActivity {
                 timerParameters.toMinute = minute;
                 if (getCalendarFromPicker(fromTimePicker).after(getCalendarFromPicker(toTimePicker))) {
                     toTimePicker.setCurrentHour(fromTimePicker.getCurrentHour());
+                    toTimePicker.setCurrentMinute(fromTimePicker.getCurrentMinute());
                     timerParameters.toHour = fromTimePicker.getCurrentHour();
+                    timerParameters.toMinute = fromTimePicker.getCurrentMinute();
                 }
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
