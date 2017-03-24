@@ -41,9 +41,10 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receiver.AlarmReceiver"/>
+        <receiver android:name=".receiver.FromTimeReceiver"/>
+        <receiver android:name=".receiver.ToTimeReceiver"/>
         <service
-            android:name=".receiver.MediaPlayerService"
+            android:name=".player.MediaPlayerService"
             android:exported="false"/>
 
 

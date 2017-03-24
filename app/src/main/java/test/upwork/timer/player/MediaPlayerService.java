@@ -1,4 +1,4 @@
-package test.upwork.timer.receiver;
+package test.upwork.timer.player;
 
 import android.app.Service;
 import android.content.Context;

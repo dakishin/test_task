@@ -5,16 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import test.upwork.timer.player.MediaPlayerService;
+
 /**
  * Created by dakishin@gmail.com
  */
 
-public class AlarmReceiver extends BroadcastReceiver {
-    private static final String TAG = AlarmReceiver.class.getName();
+public class FromTimeReceiver extends BroadcastReceiver {
+    private static final String TAG = FromTimeReceiver.class.getName();
 
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.e(TAG, "alarm received");
+        MediaPlayerService.start(context);
     }
 }

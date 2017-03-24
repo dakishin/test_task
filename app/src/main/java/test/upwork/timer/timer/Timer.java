@@ -9,7 +9,8 @@ import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import test.upwork.timer.PreferencesAdapter;
-import test.upwork.timer.receiver.AlarmReceiver;
+import test.upwork.timer.receiver.FromTimeReceiver;
+import test.upwork.timer.receiver.ToTimeReceiver;
 
 /**
  * Created by dakishin@gmail.com
@@ -19,20 +20,32 @@ public class Timer {
 
     public static void startAlarm(Context context) {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent alarmIntent = getAlarmIntent(context);
+        PendingIntent alarmIntent = getFromTimeIntent(context);
 
 
         TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(context);
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, timerParameters.fromHour);
-        calendar.set(Calendar.MINUTE, timerParameters.fromMinute);
+
+
+        Calendar fromTime = Calendar.getInstance();
+        fromTime.set(Calendar.HOUR_OF_DAY, timerParameters.fromHour);
+        fromTime.set(Calendar.MINUTE, timerParameters.fromMinute);
 
 
         alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP,
-            calendar.getTimeInMillis(),
+            fromTime.getTimeInMillis(),
             getPeriod(timerParameters),
-//            3000,
             alarmIntent);
+
+
+        Calendar toTime = Calendar.getInstance();
+        toTime.set(Calendar.HOUR_OF_DAY, timerParameters.toHour);
+        toTime.set(Calendar.MINUTE, timerParameters.toMinute);
+
+        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP,
+            toTime.getTimeInMillis(),
+            getPeriod(timerParameters),
+            alarmIntent);
+
 
         timerParameters.isRunning = true;
         PreferencesAdapter.saveTimerParameters(context, timerParameters);
@@ -40,9 +53,10 @@ public class Timer {
     }
 
     public static void stopAlarm(Context context) {
-        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        if (alarmMgr != null) {
-            alarmMgr.cancel(getAlarmIntent(context));
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.cancel(getFromTimeIntent(context));
+            alarmManager.cancel(getToTimeIntent(context));
         }
         TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(context);
         timerParameters.isRunning = false;
@@ -63,9 +77,13 @@ public class Timer {
     }
 
 
-    private static PendingIntent getAlarmIntent(Context context) {
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-        return alarmIntent;
+    private static PendingIntent getFromTimeIntent(Context context) {
+        Intent intent = new Intent(context, FromTimeReceiver.class);
+        return PendingIntent.getBroadcast(context, 0, intent, 0);
+    }
+
+    private static PendingIntent getToTimeIntent(Context context) {
+        Intent intent = new Intent(context, ToTimeReceiver.class);
+        return PendingIntent.getBroadcast(context, 0, intent, 0);
     }
 }

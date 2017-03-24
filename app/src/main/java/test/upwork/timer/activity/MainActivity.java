@@ -26,7 +26,7 @@ import java.util.Calendar;
 import test.upwork.timer.FileHelper;
 import test.upwork.timer.PreferencesAdapter;
 import test.upwork.timer.R;
-import test.upwork.timer.receiver.MediaPlayerService;
+import test.upwork.timer.player.MediaPlayerService;
 import test.upwork.timer.timer.TimerParameters;
 import test.upwork.timer.timer.UriUtils;
 
