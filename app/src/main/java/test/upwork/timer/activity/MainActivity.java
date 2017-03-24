@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -24,8 +25,9 @@ import java.util.Calendar;
 
 import test.upwork.timer.PreferencesAdapter;
 import test.upwork.timer.R;
-import test.upwork.timer.timer.Timer;
+import test.upwork.timer.receiver.MediaPlayerService;
 import test.upwork.timer.timer.TimerParameters;
+import test.upwork.timer.timer.UriUtils;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -33,19 +35,14 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int CHOOSE_FILE_RESULT_CODE = 123;
     private static final int READ_EXTERNAL_STORAGE_CODE = 124;
-    public static final int MAX_FILE_SIZE_BYTES = 1024 * 1024 * 10;
-    public static final int MAX_UPLOADED_MELODIES = 2;
+    private static final String TAG = MainActivity.class.getName();
+    private Uri chosenUri;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
         initRepeat(timerParameters);
         initFromToTime(timerParameters);
@@ -53,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         initPauseInterval(timerParameters);
         initStartTimerButton(timerParameters);
     }
+
 
     private void initStartTimerButton(final TimerParameters timerParameters) {
         Switch startTimerSwitch = (Switch) findViewById(R.id.startTimerSwitch);
@@ -62,12 +60,18 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 timerParameters.isRunning = isChecked;
                 if (isChecked) {
-                    Timer.startAlarm(getApplicationContext());
+                    MediaPlayerService.startPlay(getApplicationContext());
+//                    Timer.startAlarm(getApplicationContext());
                 } else {
-                    Timer.stopAlarm(getApplicationContext());
+                    MediaPlayerService.stopPlay(getApplicationContext());
+//                    Timer.stopAlarm(getApplicationContext());
                 }
             }
         });
+
+        TextView fileName = (TextView) findViewById(R.id.file_name);
+        fileName.setText(timerParameters.soundFileName);
+
     }
 
     private void initPlayInterval(final TimerParameters timerParameters) {
@@ -117,8 +121,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public MainActivity() {
-    }
+
 
     private void initFromToTime(final TimerParameters timerParameters) {
         Calendar calendar = Calendar.getInstance();
@@ -185,27 +188,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private static final int FILE_SELECT_CODE = 0;
-
-    private void showFileChooser() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        try {
-            startActivityForResult(
-                Intent.createChooser(intent, "Select a File to Upload"),
-                FILE_SELECT_CODE);
-        } catch (android.content.ActivityNotFoundException ex) {
-            // Potentially direct the user to the Market with a Dialog
-            Toast.makeText(this, "Please install a File Manager.",
-                Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private boolean hasRunTimePermission(String permission) {
-        boolean permissionRequired = ContextCompat.checkSelfPermission(this,
-            permission) != PackageManager.PERMISSION_GRANTED;
+        boolean permissionRequired = ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED;
 
         if (!permissionRequired) {
             return true;
@@ -220,21 +204,11 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case READ_EXTERNAL_STORAGE_CODE: {
                 // If request is cancelled, the result arrays are empty.
-                boolean needShowExplanation = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE);
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     checkPermission();
                     return;
                 }
 
-                if (!needShowExplanation) {
-//                    final MessageDialog dialog = new MessageDialog(getActivity());
-//                    dialog.setup(Html.fromHtml(getString(R.string.error_file_permission)), 0, R.string.ok, new MessageDialog.ClickListenerAdapter() {
-//                        @Override
-//                        public void onClickRight() {
-//                            dialog.dismiss();
-//                        }
-//                    }).show();
-                }
             }
         }
     }
@@ -287,10 +261,14 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                Uri chosenUri = data.getData();
+                chosenUri = data.getData();
                 TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
                 timerParameters.soundFileUri = chosenUri.toString();
+                timerParameters.soundFileName = UriUtils.extractFilename(getApplicationContext(), chosenUri);
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
+                initStartTimerButton(timerParameters);
+
+                MediaPlayerService.startPlay(getApplicationContext());
                 return;
             default:
                 super.onActivityResult(requestCode, resultCode, data);

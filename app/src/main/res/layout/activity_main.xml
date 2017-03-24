@@ -18,23 +18,30 @@
         tools:context="test.upwork.timer.activity.MainActivity">
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <Switch
-                android:text="Enable Timer        "
                 android:id="@+id/startTimerSwitch"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:text="Enable Timer        "/>
 
 
             <Button
-                android:onClick="selectFile"
                 android:id="@+id/selectWMAFile"
-                android:text="Select WMA file"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:onClick="selectFile"
+                android:text="Select WMA file"/>
+
+            <TextView
+                android:id="@+id/file_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                tools:text="rockers"/>
 
         </LinearLayout>
 
@@ -122,7 +129,6 @@
 
 
         </LinearLayout>
-
 
 
     </LinearLayout>
