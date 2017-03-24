@@ -77,17 +77,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void initPlayInterval(final TimerParameters timerParameters) {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-            R.array.play_interval, android.R.layout.simple_spinner_item);
+            R.array.interval_minutes, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner playIntervalSpinner = (Spinner) findViewById(R.id.play_interval_spinner);
         playIntervalSpinner.setAdapter(adapter);
 
-        playIntervalSpinner.setSelection(timerParameters.playIntervalMillis);
+        playIntervalSpinner.setSelection(timerParameters.playIntervalInMinutes - 1);
 
         playIntervalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                timerParameters.playIntervalMillis = position;
+                timerParameters.playIntervalInMinutes = position + 1;
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
 
@@ -101,18 +101,18 @@ public class MainActivity extends AppCompatActivity {
     private void initPauseInterval(final TimerParameters timerParameters) {
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-            R.array.pause_interval, android.R.layout.simple_spinner_item);
+            R.array.interval_minutes, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner pauseIntervalSpinner = (Spinner) findViewById(R.id.pause_onterval_spinner);
 
 
         pauseIntervalSpinner.setAdapter(adapter);
-        pauseIntervalSpinner.setSelection(timerParameters.pauseIntervalMillis);
+        pauseIntervalSpinner.setSelection(timerParameters.pauseIntervalInMinutes - 1);
 
         pauseIntervalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                timerParameters.pauseIntervalMillis = position;
+                timerParameters.pauseIntervalInMinutes = position + 1;
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
 

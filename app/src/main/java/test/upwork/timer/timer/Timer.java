@@ -53,7 +53,7 @@ public class Timer {
 
 
     private static long getPeriod(TimerParameters timerParameters) {
-        switch (timerParameters.playIntervalMillis) {
+        switch (timerParameters.repeatInterval) {
             case 0:
                 return TimeUnit.HOURS.toMillis(24);
             case 1:

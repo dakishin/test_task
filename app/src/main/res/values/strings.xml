@@ -8,7 +8,7 @@
     </string-array>
 
 
-    <string-array name="play_interval">
+    <string-array name="interval_minutes">
         <item>1 minute</item>
         <item>2 minutes</item>
         <item>3 minutes</item>
@@ -17,13 +17,7 @@
     </string-array>
 
 
-    <string-array name="pause_interval">
-        <item>1 minute</item>
-        <item>2 minutes</item>
-        <item>3 minutes</item>
-        <item>4 minutes</item>
-        <item>5 minutes</item>
-    </string-array>
+
 
     <string name="button_start">Start timer</string>
     <string name="button_stop">Stop timer</string>

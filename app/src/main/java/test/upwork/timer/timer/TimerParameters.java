@@ -16,8 +16,8 @@ public class TimerParameters {
     public int toHour = 0;
     public int toMinute = 0;
 
-    public int playIntervalMillis = 0;
-    public int pauseIntervalMillis = 0;
+    public int playIntervalInMinutes = 1;
+    public int pauseIntervalInMinutes = 1;
     public String soundFileName;
 
 

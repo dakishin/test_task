@@ -9,6 +9,10 @@ import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+
+import test.upwork.timer.PreferencesAdapter;
+import test.upwork.timer.timer.TimerParameters;
 
 /**
  * Created by dakishin@gmail.com
@@ -20,6 +24,8 @@ public class MediaPlayerService extends Service {
     public static final String DO_START = "DO_START";
     private MediaPlayerAdapter mediaPlayer;
     private Timer timerForPauseAndContinuePlay;
+    private long playInterval;
+    private long pauseInterval;
 
     public static void start(Context context) {
         Intent intent = new Intent(context, MediaPlayerService.class);
@@ -40,11 +46,15 @@ public class MediaPlayerService extends Service {
         mediaPlayer = new MediaPlayerAdapter();
         mediaPlayer.init(getApplicationContext());
         timerForPauseAndContinuePlay = new Timer();
+        TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
+        playInterval = TimeUnit.MINUTES.toMillis(timerParameters.playIntervalInMinutes);
+        pauseInterval = TimeUnit.MINUTES.toMillis(timerParameters.pauseIntervalInMinutes);
+
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        timerForPauseAndContinuePlay.schedule(createPauseTask(), 5000);
+        timerForPauseAndContinuePlay.schedule(createPauseTask(), playInterval);
         mediaPlayer.start();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -55,7 +65,7 @@ public class MediaPlayerService extends Service {
             public void run() {
                 Log.e(TAG, "pause task");
                 mediaPlayer.pause();
-                timerForPauseAndContinuePlay.schedule(createContinueTask(), 5000);
+                timerForPauseAndContinuePlay.schedule(createContinueTask(), pauseInterval);
             }
         };
     }
@@ -66,7 +76,7 @@ public class MediaPlayerService extends Service {
             public void run() {
                 Log.e(TAG, "continue task");
                 mediaPlayer.start();
-                timerForPauseAndContinuePlay.schedule(createPauseTask(), 5000);
+                timerForPauseAndContinuePlay.schedule(createPauseTask(), playInterval);
             }
         };
     }
