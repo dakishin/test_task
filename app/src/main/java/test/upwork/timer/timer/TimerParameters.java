@@ -16,6 +16,5 @@ public class TimerParameters {
 
     public int playInterval = 0;
     public int pauseInterval = 0;
-    public String soundFileUri;
     public String soundFileName;
 }

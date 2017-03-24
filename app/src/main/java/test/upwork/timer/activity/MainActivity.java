@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,11 +21,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.OutputStream;
 import java.util.Calendar;
 
+import test.upwork.timer.FileHelper;
 import test.upwork.timer.PreferencesAdapter;
 import test.upwork.timer.R;
 import test.upwork.timer.receiver.MediaPlayerService;
@@ -64,10 +61,10 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 timerParameters.isRunning = isChecked;
                 if (isChecked) {
-                    MediaPlayerService.startPlay(getApplicationContext());
+                    MediaPlayerService.start(getApplicationContext());
 //                    Timer.startAlarm(getApplicationContext());
                 } else {
-                    MediaPlayerService.stopPlay(getApplicationContext());
+                    MediaPlayerService.stop(getApplicationContext());
 //                    Timer.stopAlarm(getApplicationContext());
                 }
             }
@@ -128,10 +125,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void initFromToTime(final TimerParameters timerParameters) {
         Calendar calendar = Calendar.getInstance();
-
-        int hours = calendar.get(Calendar.HOUR_OF_DAY);
-        int minutes = calendar.get(Calendar.MINUTE);
-
 
         TimePicker fromTimePicker = (TimePicker) findViewById(R.id.fromTime);
         fromTimePicker.setIs24HourView(true);
@@ -266,21 +259,12 @@ public class MainActivity extends AppCompatActivity {
 
                 chosenUri = data.getData();
 
-                try {
-                    OutputStream os = openFileOutput("playfile", MODE_PRIVATE);
-                    IOUtils.copy(getContentResolver().openInputStream(chosenUri), os);
-                } catch (Exception e) {
-                    Log.e(TAG, e.getMessage(), e);
-                }
-
-
                 TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
-                timerParameters.soundFileUri = chosenUri.toString();
                 timerParameters.soundFileName = UriUtils.extractFilename(getApplicationContext(), chosenUri);
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
                 initStartTimerButton(timerParameters);
 
-//                MediaPlayerService.startPlay(getApplicationContext());
+                FileHelper.saveFile(getApplicationContext(), chosenUri);
                 return;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
