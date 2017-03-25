@@ -54,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int CHOOSE_FILE_RESULT_CODE = 123;
     private static final int READ_EXTERNAL_STORAGE_CODE = 124;
     private static final String TAG = MainActivity.class.getName();
+    public static final String HOURS_PARAM = "hours";
+    public static final String MINUTES_PARAM = "minutes";
+    public static final String LISTENER_PARAM = "listener";
     TextView fromTimeTextView;
     TextView toTimeTextView;
     private TimerParameters timerParameters;
@@ -206,10 +209,11 @@ public class MainActivity extends AppCompatActivity {
     public static class TimePickerFragment extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            int hour = getArguments().getInt("hours");
-            int minute = getArguments().getInt("minutes");
-            TimePickerDialog.OnTimeSetListener listener = (TimePickerDialog.OnTimeSetListener) getArguments().getSerializable("listener");
-            return new TimePickerDialog(getActivity(), listener, hour, minute, true);
+            int hour = getArguments().getInt(HOURS_PARAM);
+            int minute = getArguments().getInt(MINUTES_PARAM);
+            TimePickerDialog.OnTimeSetListener listener = (TimePickerDialog.OnTimeSetListener) getArguments().getSerializable(LISTENER_PARAM);
+            TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), listener, hour, minute, true);
+            return timePickerDialog;
         }
     }
 
@@ -241,9 +245,9 @@ public class MainActivity extends AppCompatActivity {
     private void showTimePicker(int hour, int minute, Serializable listener) {
         DialogFragment newFragment = new TimePickerFragment();
         Bundle param = new Bundle();
-        param.putInt("hours", hour);
-        param.putInt("minutes", minute);
-        param.putSerializable("listener", listener);
+        param.putInt(HOURS_PARAM, hour);
+        param.putInt(MINUTES_PARAM, minute);
+        param.putSerializable(LISTENER_PARAM, listener);
         newFragment.setArguments(param);
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
