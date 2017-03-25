@@ -12,7 +12,10 @@ import test.upwork.timer.timer.TimerParameters;
  * Created by dakishin@gmail.com
  */
 
-public class MediaPlayerAdapter {
+/**
+ * Class handles {@link MediaPlayer} logic.
+ */
+class MediaPlayerAdapter {
     private MediaPlayer mediaPlayer;
     private static final String TAG = MediaPlayerAdapter.class.getName();
 

@@ -16,6 +16,9 @@ import test.upwork.timer.receiver.ToTimeReceiver;
  * Created by dakishin@gmail.com
  */
 
+/**
+ * The main timer of app.
+ */
 public class Timer {
 
     public static void start(Context context) {

@@ -8,17 +8,14 @@ import android.app.TimePickerDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -374,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Convert file from wma to mp3
+     * Convert file from wma to mp3. If it needed.
      */
     class ConvertFileTask extends AsyncTask<Void, Void, File> {
         private final Uri sourceUri;
@@ -395,7 +392,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected File doInBackground(Void... params) {
-            // There is no better way to get file path from uri. Library needs file in external storage.
+            // There is no right way to get file path from uri. This is implementation of provider.  Library needs file in external storage.
             String fileName = "temp_" + UriUtils.extractFilename(getApplicationContext(), sourceUri);
             sourceFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
             try {
@@ -484,16 +481,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private String getRealPathFromURI(Uri contentUri) {
-        String[] proj = {MediaStore.Images.Media.DATA};
-        CursorLoader loader = new CursorLoader(getApplicationContext(), contentUri, proj, null, null, null);
-        Cursor cursor = loader.loadInBackground();
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        String result = cursor.getString(column_index);
-        cursor.close();
-        return result;
-    }
 
     @Override
     protected void onStop() {

@@ -17,7 +17,7 @@ import java.net.MalformedURLException;
 public class UriUtils {
 
     /**
-     * Получить имя ресурса по его uri
+     * Extract file name from Uri
      */
     public static String extractFilename(Context context, Uri uri) {
         String name = extractFileNameFromMetaData(context, uri);
@@ -25,20 +25,6 @@ public class UriUtils {
             name = extractFileNameFromUriPath(uri);
         }
         return name == null ? "" : name;
-    }
-
-    /**
-     * Получить размер файла ресурса в байтах.
-     * Если размер получить не удалось возвращаем -1.
-     */
-    public static long extractFileSize(Context context, Uri uri) {
-        long fileSize = UriUtils.extractFileSizeFromMetaData(context, uri);
-
-        if (fileSize == -1) {
-            return extractFileSizeFromPath(uri);
-        }
-
-        return fileSize;
     }
 
 
@@ -62,7 +48,6 @@ public class UriUtils {
 
     /**
      * https://developer.android.com/intl/ru/guide/topics/providers/document-provider.html
-     * Метод читающий мета данные документа из Google Drive
      */
     private static String extractFileNameFromMetaData(Context context, Uri uri) {
         Cursor cursor = null;
@@ -124,4 +109,6 @@ public class UriUtils {
             return null;
         }
     }
+
+
 }

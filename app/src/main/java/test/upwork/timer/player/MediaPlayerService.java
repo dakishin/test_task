@@ -18,6 +18,9 @@ import test.upwork.timer.timer.TimerParameters;
  * Created by dakishin@gmail.com
  */
 
+/**
+ * Service holds running Timer state.
+ */
 public class MediaPlayerService extends Service {
 
     private static final String TAG = MediaPlayerService.class.getName();
