@@ -364,9 +364,6 @@ public class MainActivity extends AppCompatActivity {
 
                 Uri chosenUri = data.getData();
 
-                timerParameters.soundFileName = UriUtils.extractFilename(getApplicationContext(), chosenUri);
-                PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
-                initStartTimerButton();
                 ConvertFileTask convertFileTask = new ConvertFileTask(chosenUri);
                 convertFileTask.execute();
                 return;
@@ -382,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
     class ConvertFileTask extends AsyncTask<Void, Void, File> {
         private final Uri sourceUri;
         private ProgressDialog progress;
-        private File wmaFile;
+        private File sourceFile;
 
         public ConvertFileTask(Uri sourceUri) {
             this.sourceUri = sourceUri;
@@ -399,38 +396,41 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected File doInBackground(Void... params) {
             // There is no better way to get file path from uri. Library needs file in external storage.
-            wmaFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "temp.wma");
+            String fileName = "temp_" + UriUtils.extractFilename(getApplicationContext(), sourceUri);
+            sourceFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
             try {
-                IOUtils.copy(getContentResolver().openInputStream(sourceUri), new FileOutputStream(wmaFile));
+                IOUtils.copy(getContentResolver().openInputStream(sourceUri), new FileOutputStream(sourceFile));
             } catch (IOException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
 
-            return wmaFile;
+            return sourceFile;
         }
 
         @Override
-        protected void onPostExecute(final File wmaFile) {
+        protected void onPostExecute(final File sourceFile) {
+            if (!"wma".equalsIgnoreCase(UriUtils.getFileExtension(sourceFile))) {
+                publicTaskResult(sourceFile);
+                return;
+            }
             AndroidAudioConverter.with(MainActivity.this)
-                .setFile(wmaFile)
+                .setFile(sourceFile)
                 .setFormat(AudioFormat.MP3)
                 .setCallback(new IConvertCallback() {
                     @Override
                     public void onSuccess(File file) {
                         try {
-                            wmaFile.delete();
+                            sourceFile.delete();
                         } catch (Exception ignored) {
 
                         }
-                        timerParameters.soundFilePath = file.getAbsolutePath();
-                        PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
-                        progress.dismiss();
+                        publicTaskResult(file);
                     }
 
                     @Override
                     public void onFailure(Exception e) {
                         try {
-                            wmaFile.delete();
+                            sourceFile.delete();
                         } catch (Exception ignored) {
 
                         }
@@ -439,6 +439,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .convert();
+        }
+
+        private void publicTaskResult(File sourceFile) {
+            timerParameters.soundFileName = UriUtils.extractFilename(getApplicationContext(), sourceUri);
+            timerParameters.soundFilePath = sourceFile.getAbsolutePath();
+            PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
+            initStartTimerButton();
+            progress.dismiss();
         }
     }
 

@@ -5,8 +5,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
+import android.webkit.MimeTypeMap;
 
 import java.io.File;
+import java.net.MalformedURLException;
 
 /**
  * Created by dakishin@gmail.com
@@ -111,6 +113,15 @@ public class UriUtils {
             return -1;
         } catch (Exception e) {
             return -1;
+        }
+    }
+
+
+    public static String getFileExtension(File file) {
+        try {
+            return MimeTypeMap.getFileExtensionFromUrl(file.toURL().toString());
+        } catch (MalformedURLException e) {
+            return null;
         }
     }
 }
