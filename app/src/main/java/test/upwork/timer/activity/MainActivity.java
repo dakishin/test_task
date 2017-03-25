@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initFromToTime() {
-        initTimeView(fromTimeTextView, timerParameters.fromHour, timerParameters.toHour);
+        initTimeView(fromTimeTextView, timerParameters.fromHour, timerParameters.fromMinute);
         initTimeView(toTimeTextView, timerParameters.toHour, timerParameters.toMinute);
 
         fromTimeTextView.setOnClickListener(new View.OnClickListener() {

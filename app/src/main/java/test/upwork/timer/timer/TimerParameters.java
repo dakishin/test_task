@@ -13,8 +13,8 @@ public class TimerParameters {
     public Integer fromHour;
     public Integer fromMinute;
 
-    public Integer toHour = 0;
-    public Integer toMinute = 0;
+    public Integer toHour;
+    public Integer toMinute;
 
     public int playIntervalInMinutes = 1;
     public int pauseIntervalInMinutes = 1;
