@@ -28,5 +28,6 @@
     <string name="main_pause_interval">Pause interval</string>
     <string name="main_wma_file">WMA file</string>
     <string name="main_button_choose">Choose</string>
+    <string name="main_dialog_wait">Please wait, file is loading...</string>
 
 </resources>

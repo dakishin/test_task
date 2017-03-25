@@ -3,12 +3,14 @@ package test.upwork.timer.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -42,7 +44,6 @@ import java.util.Formatter;
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
 import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
 import cafe.adriel.androidaudioconverter.model.AudioFormat;
-import test.upwork.timer.FileHelper;
 import test.upwork.timer.PreferencesAdapter;
 import test.upwork.timer.R;
 import test.upwork.timer.player.MediaPlayerService;
@@ -56,10 +57,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int CHOOSE_FILE_RESULT_CODE = 123;
     private static final int READ_EXTERNAL_STORAGE_CODE = 124;
     private static final String TAG = MainActivity.class.getName();
-    private Uri chosenUri;
     TextView fromTimeTextView;
     TextView toTimeTextView;
     private TimerParameters timerParameters;
+    private ConvertFileTask convertFileTask;
 
 
     @Override
@@ -361,46 +362,83 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                chosenUri = data.getData();
+                Uri chosenUri = data.getData();
 
                 timerParameters.soundFileName = UriUtils.extractFilename(getApplicationContext(), chosenUri);
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
                 initStartTimerButton();
-
-
-                File wmaFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "wmafile.wma");
-
-                try {
-                    IOUtils.copy(getContentResolver().openInputStream(chosenUri), new FileOutputStream(wmaFile));
-                } catch (IOException e) {
-                    Log.e(TAG, e.getMessage(), e);
-                }
-
-                AndroidAudioConverter.with(this)
-                    .setFile(wmaFile)
-                    .setFormat(AudioFormat.MP3)
-                    .setCallback(new IConvertCallback() {
-                        @Override
-                        public void onSuccess(File file) {
-                            timerParameters.soundFilePath = file.getAbsolutePath();
-                            Toast.makeText(MainActivity.this, "Conversion is  successful", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-                            Log.e(TAG, e.getMessage(), e);
-                            Toast.makeText(MainActivity.this, "Conversion failed", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-
-                    .convert();
-
-
+                ConvertFileTask convertFileTask = new ConvertFileTask(chosenUri);
+                convertFileTask.execute();
                 return;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
         }
 
+    }
+
+    /**
+     * Convert file from wma to mp3
+     */
+    class ConvertFileTask extends AsyncTask<Void, Void, File> {
+        private final Uri sourceUri;
+        private ProgressDialog progress;
+        private File wmaFile;
+
+        public ConvertFileTask(Uri sourceUri) {
+            this.sourceUri = sourceUri;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progress = new ProgressDialog(MainActivity.this);
+            progress.setMessage(getString(R.string.main_dialog_wait));
+            progress.show();
+        }
+
+        @Override
+        protected File doInBackground(Void... params) {
+            // There is no better way to get file path from uri. Library needs file in external storage.
+            File wmaFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "temp.wma");
+            try {
+                IOUtils.copy(getContentResolver().openInputStream(sourceUri), new FileOutputStream(wmaFile));
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(final File wmaFile) {
+            AndroidAudioConverter.with(MainActivity.this)
+                .setFile(wmaFile)
+                .setFormat(AudioFormat.MP3)
+                .setCallback(new IConvertCallback() {
+                    @Override
+                    public void onSuccess(File file) {
+                        try {
+                            wmaFile.delete();
+                        } catch (Exception ignored) {
+
+                        }
+                        timerParameters.soundFilePath = file.getAbsolutePath();
+                        PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
+                        progress.dismiss();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        try {
+                            wmaFile.delete();
+                        } catch (Exception ignored) {
+
+                        }
+                        Log.e(TAG, e.getMessage(), e);
+                        progress.dismiss();
+                    }
+                })
+                .convert();
+        }
     }
 
 
@@ -453,4 +491,13 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        try {
+            convertFileTask.cancel(true);
+        } catch (Exception ignored) {
+
+        }
+    }
 }
