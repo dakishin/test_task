@@ -2,6 +2,8 @@ package test.upwork.timer.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -21,7 +24,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Formatter;
 
 import test.upwork.timer.FileHelper;
 import test.upwork.timer.PreferencesAdapter;
@@ -38,12 +43,16 @@ public class MainActivity extends AppCompatActivity {
     private static final int READ_EXTERNAL_STORAGE_CODE = 124;
     private static final String TAG = MainActivity.class.getName();
     private Uri chosenUri;
+    TextView fromTimeTextView;
+    TextView toTimeTextView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        fromTimeTextView = (TextView) findViewById(R.id.fromTimeTextView);
+        toTimeTextView = (TextView) findViewById(R.id.toTimeTextView);
         TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
         initRepeat(timerParameters);
         initFromToTime(timerParameters);
@@ -124,50 +133,92 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void initFromToTime(final TimerParameters timerParameters) {
-        final TimePicker fromTimePicker = (TimePicker) findViewById(R.id.fromTime);
-        final TimePicker toTimePicker = (TimePicker) findViewById(R.id.toTime);
+    private class FromTimeListener implements TimePickerDialog.OnTimeSetListener, Serializable {
 
+        @Override
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
+            timerParameters.fromHour = hourOfDay;
+            timerParameters.fromMinute = minute;
+            initTimeView(fromTimeTextView, hourOfDay, minute);
 
-        fromTimePicker.setIs24HourView(true);
-        fromTimePicker.setCurrentHour(timerParameters.fromHour);
-        fromTimePicker.setCurrentMinute(timerParameters.fromMinute);
-
-        fromTimePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-            @Override
-            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                timerParameters.fromHour = hourOfDay;
-                timerParameters.fromMinute = minute;
-                if (getCalendarFromPicker(fromTimePicker).after(getCalendarFromPicker(toTimePicker))) {
-                    toTimePicker.setCurrentHour(hourOfDay);
-                    toTimePicker.setCurrentMinute(minute);
-                    timerParameters.toHour = hourOfDay;
-                    timerParameters.toMinute = minute;
-                }
-                PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
-
-            }
-        });
-
-        toTimePicker.setIs24HourView(true);
-        toTimePicker.setCurrentHour(timerParameters.toHour);
-        toTimePicker.setCurrentMinute(timerParameters.toMinute);
-
-        toTimePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-            @Override
-            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+            if (timerParameters.getFromCalendar().after(timerParameters.getToCalendar())) {
                 timerParameters.toHour = hourOfDay;
-                timerParameters.toMinute = minute;
-                if (getCalendarFromPicker(fromTimePicker).after(getCalendarFromPicker(toTimePicker))) {
-                    toTimePicker.setCurrentHour(fromTimePicker.getCurrentHour());
-                    toTimePicker.setCurrentMinute(fromTimePicker.getCurrentMinute());
-                    timerParameters.toHour = fromTimePicker.getCurrentHour();
-                    timerParameters.toMinute = fromTimePicker.getCurrentMinute();
-                }
-                PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
+                timerParameters.fromHour = hourOfDay;
+                initTimeView(toTimeTextView, hourOfDay, minute);
+            }
+
+            PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
+        }
+    }
+
+
+    private class ToTimeListener implements TimePickerDialog.OnTimeSetListener, Serializable {
+
+        @Override
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
+            timerParameters.toHour = hourOfDay;
+            timerParameters.toMinute = minute;
+            if (timerParameters.getFromCalendar().after(timerParameters.getToCalendar())) {
+                timerParameters.toHour = timerParameters.fromHour;
+                timerParameters.toMinute = timerParameters.fromMinute;
+            }
+            initTimeView(toTimeTextView, timerParameters.toHour, timerParameters.toMinute);
+            PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
+        }
+    }
+
+
+    private FromTimeListener fromTimeListener = new FromTimeListener();
+    private ToTimeListener toTimeListener = new ToTimeListener();
+
+
+    public static class TimePickerFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            int hour = getArguments().getInt("hours");
+            int minute = getArguments().getInt("minutes");
+            TimePickerDialog.OnTimeSetListener listener = (TimePickerDialog.OnTimeSetListener) getArguments().getSerializable("listener");
+            return new TimePickerDialog(getActivity(), listener, hour, minute, true);
+        }
+    }
+
+    public void initTimeView(TextView textView, int hours, int minutes) {
+        textView.setText(new Formatter().format("%02d:%02d", hours, minutes).toString());
+    }
+
+    private void initFromToTime(TimerParameters timerParameters) {
+        initTimeView(fromTimeTextView, timerParameters.fromHour, timerParameters.toHour);
+        initTimeView(toTimeTextView, timerParameters.toHour, timerParameters.toMinute);
+
+        fromTimeTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
+                showTimePicker(timerParameters.fromHour, timerParameters.fromMinute, fromTimeListener);
             }
         });
 
+        toTimeTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
+                showTimePicker(timerParameters.toHour, timerParameters.toMinute, toTimeListener);
+            }
+        });
+
+
+    }
+
+    private void showTimePicker(int hour, int minute, Serializable listener) {
+        DialogFragment newFragment = new TimePickerFragment();
+        Bundle param = new Bundle();
+        param.putInt("hours", hour);
+        param.putInt("minutes", minute);
+        param.putSerializable("listener", listener);
+        newFragment.setArguments(param);
+        newFragment.show(getSupportFragmentManager(), "timePicker");
     }
 
 
