@@ -43,7 +43,7 @@ import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
 import cafe.adriel.androidaudioconverter.model.AudioFormat;
 import test.upwork.timer.PreferencesAdapter;
 import test.upwork.timer.R;
-import test.upwork.timer.player.MediaPlayerService;
+import test.upwork.timer.timer.Timer;
 import test.upwork.timer.timer.TimerParameters;
 import test.upwork.timer.timer.UriUtils;
 
@@ -92,11 +92,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 timerParameters.isRunning = isChecked;
                 if (isChecked) {
-                    MediaPlayerService.start(getApplicationContext());
-//                    Timer.startAlarm(getApplicationContext());
+                    Timer.start(getApplicationContext());
                 } else {
-                    MediaPlayerService.stop(getApplicationContext());
-//                    Timer.stopAlarm(getApplicationContext());
+                    Timer.stop(getApplicationContext());
                 }
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
@@ -308,9 +306,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkPermission() {
-//        if (!hasRunTimePermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-//            return;
-//        }
+        if (!hasRunTimePermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            return;
+        }
 
         if (!hasRunTimePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             return;
@@ -360,8 +358,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 Uri chosenUri = data.getData();
-
-                ConvertFileTask convertFileTask = new ConvertFileTask(chosenUri);
+                convertFileTask = new ConvertFileTask(chosenUri);
                 convertFileTask.execute();
                 return;
             default:
@@ -450,10 +447,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void restartTimerIfNeeded() {
         if (timerParameters.isRunning) {
-            MediaPlayerService.stop(getApplicationContext());
-            MediaPlayerService.start(getApplicationContext());
-//            Timer.stop(getApplicationContext());
-//            Timer.start(getApplicationContext());
+            Timer.stop(getApplicationContext());
+            Timer.start(getApplicationContext());
         }
     }
 
