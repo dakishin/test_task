@@ -392,20 +392,21 @@ public class MainActivity extends AppCompatActivity {
         protected void onPreExecute() {
             progress = new ProgressDialog(MainActivity.this);
             progress.setMessage(getString(R.string.main_dialog_wait));
+            progress.setCancelable(false);
             progress.show();
         }
 
         @Override
         protected File doInBackground(Void... params) {
             // There is no better way to get file path from uri. Library needs file in external storage.
-            File wmaFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "temp.wma");
+            wmaFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "temp.wma");
             try {
                 IOUtils.copy(getContentResolver().openInputStream(sourceUri), new FileOutputStream(wmaFile));
             } catch (IOException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
 
-            return null;
+            return wmaFile;
         }
 
         @Override
@@ -449,11 +450,6 @@ public class MainActivity extends AppCompatActivity {
 //            Timer.stop(getApplicationContext());
 //            Timer.start(getApplicationContext());
         }
-    }
-
-    public File getDownload(String albumName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), albumName);
-        return file;
     }
 
 
