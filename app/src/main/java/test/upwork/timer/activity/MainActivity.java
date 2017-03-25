@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initPlayInterval() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-            R.array.interval_minutes, android.R.layout.simple_spinner_item);
+            R.array.interval_minutes, R.layout.spiner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner playIntervalSpinner = (Spinner) findViewById(R.id.play_interval_spinner);
         playIntervalSpinner.setAdapter(adapter);
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
     private void initPauseInterval() {
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-            R.array.interval_minutes, android.R.layout.simple_spinner_item);
+            R.array.interval_minutes, R.layout.spiner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner pauseIntervalSpinner = (Spinner) findViewById(R.id.pause_onterval_spinner);
 
@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initRepeat() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-            R.array.repeat_items, android.R.layout.simple_spinner_item);
+            R.array.repeat_items, R.layout.spiner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner repeatSpinner = (Spinner) findViewById(R.id.repeat_spinner);
         repeatSpinner.setAdapter(adapter);
