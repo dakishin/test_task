@@ -100,6 +100,9 @@ public class MainActivity extends AppCompatActivity {
         playIntervalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (timerParameters.playIntervalInMinutes == position + 1) {
+                    return;
+                }
                 timerParameters.playIntervalInMinutes = position + 1;
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
                 restartTimerIfNeeded();
@@ -126,6 +129,9 @@ public class MainActivity extends AppCompatActivity {
         pauseIntervalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (timerParameters.pauseIntervalInMinutes == position + 1) {
+                    return;
+                }
                 timerParameters.pauseIntervalInMinutes = position + 1;
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
                 restartTimerIfNeeded();
@@ -237,6 +243,9 @@ public class MainActivity extends AppCompatActivity {
         repeatSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == timerParameters.repeatInterval) {
+                    return;
+                }
                 timerParameters.repeatInterval = position;
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
                 restartTimerIfNeeded();
