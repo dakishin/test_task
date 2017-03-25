@@ -25,6 +25,7 @@
             android:padding="8dp">
 
             <TextView
+                android:textColor="@android:color/black"
                 android:id="@+id/fromTimeTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -33,6 +34,7 @@
                 />
 
             <TextView
+                android:textColor="@android:color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="16dp"
@@ -41,6 +43,7 @@
                 android:textSize="22sp"/>
 
             <TextView
+                android:textColor="@android:color/black"
                 android:id="@+id/toTimeTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

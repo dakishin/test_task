@@ -31,7 +31,6 @@ import test.upwork.timer.FileHelper;
 import test.upwork.timer.PreferencesAdapter;
 import test.upwork.timer.R;
 import test.upwork.timer.player.MediaPlayerService;
-import test.upwork.timer.timer.Timer;
 import test.upwork.timer.timer.TimerParameters;
 import test.upwork.timer.timer.UriUtils;
 
@@ -353,8 +352,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void restartTimerIfNeeded() {
         if (timerParameters.isRunning) {
-            Timer.stop(getApplicationContext());
-            Timer.start(getApplicationContext());
+            MediaPlayerService.stop(getApplicationContext());
+            MediaPlayerService.start(getApplicationContext());
+//            Timer.stop(getApplicationContext());
+//            Timer.start(getApplicationContext());
         }
     }
 
