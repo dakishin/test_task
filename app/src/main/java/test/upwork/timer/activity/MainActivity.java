@@ -25,13 +25,13 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Formatter;
 
 import test.upwork.timer.FileHelper;
 import test.upwork.timer.PreferencesAdapter;
 import test.upwork.timer.R;
 import test.upwork.timer.player.MediaPlayerService;
+import test.upwork.timer.timer.Timer;
 import test.upwork.timer.timer.TimerParameters;
 import test.upwork.timer.timer.UriUtils;
 
@@ -45,24 +45,27 @@ public class MainActivity extends AppCompatActivity {
     private Uri chosenUri;
     TextView fromTimeTextView;
     TextView toTimeTextView;
+    private TimerParameters timerParameters;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         fromTimeTextView = (TextView) findViewById(R.id.fromTimeTextView);
         toTimeTextView = (TextView) findViewById(R.id.toTimeTextView);
-        TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
-        initRepeat(timerParameters);
-        initFromToTime(timerParameters);
-        initPlayInterval(timerParameters);
-        initPauseInterval(timerParameters);
-        initStartTimerButton(timerParameters);
+
+        timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
+        initRepeat();
+        initFromToTime();
+        initPlayInterval();
+        initPauseInterval();
+        initStartTimerButton();
     }
 
 
-    private void initStartTimerButton(final TimerParameters timerParameters) {
+    private void initStartTimerButton() {
         Switch startTimerSwitch = (Switch) findViewById(R.id.startTimerSwitch);
         startTimerSwitch.setChecked(timerParameters.isRunning);
         startTimerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -76,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
                     MediaPlayerService.stop(getApplicationContext());
 //                    Timer.stopAlarm(getApplicationContext());
                 }
+                PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
         });
 
@@ -84,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void initPlayInterval(final TimerParameters timerParameters) {
+    private void initPlayInterval() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
             R.array.interval_minutes, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -98,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 timerParameters.playIntervalInMinutes = position + 1;
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
+                restartTimerIfNeeded();
             }
 
             @Override
@@ -107,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initPauseInterval(final TimerParameters timerParameters) {
+    private void initPauseInterval() {
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
             R.array.interval_minutes, android.R.layout.simple_spinner_item);
@@ -123,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 timerParameters.pauseIntervalInMinutes = position + 1;
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
+                restartTimerIfNeeded();
             }
 
             @Override
@@ -137,7 +143,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
             timerParameters.fromHour = hourOfDay;
             timerParameters.fromMinute = minute;
             initTimeView(fromTimeTextView, hourOfDay, minute);
@@ -149,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
+            restartTimerIfNeeded();
         }
     }
 
@@ -157,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
             timerParameters.toHour = hourOfDay;
             timerParameters.toMinute = minute;
             if (timerParameters.getFromCalendar().after(timerParameters.getToCalendar())) {
@@ -166,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
             }
             initTimeView(toTimeTextView, timerParameters.toHour, timerParameters.toMinute);
             PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
+            restartTimerIfNeeded();
         }
     }
 
@@ -188,14 +194,13 @@ public class MainActivity extends AppCompatActivity {
         textView.setText(new Formatter().format("%02d:%02d", hours, minutes).toString());
     }
 
-    private void initFromToTime(TimerParameters timerParameters) {
+    private void initFromToTime() {
         initTimeView(fromTimeTextView, timerParameters.fromHour, timerParameters.toHour);
         initTimeView(toTimeTextView, timerParameters.toHour, timerParameters.toMinute);
 
         fromTimeTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
                 showTimePicker(timerParameters.fromHour, timerParameters.fromMinute, fromTimeListener);
             }
         });
@@ -203,7 +208,6 @@ public class MainActivity extends AppCompatActivity {
         toTimeTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
                 showTimePicker(timerParameters.toHour, timerParameters.toMinute, toTimeListener);
             }
         });
@@ -222,14 +226,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private Calendar getCalendarFromPicker(TimePicker timePicker) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, timePicker.getCurrentHour());
-        calendar.set(Calendar.MINUTE, timePicker.getCurrentMinute());
-        return calendar;
-    }
-
-    private void initRepeat(final TimerParameters timerParameters) {
+    private void initRepeat() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
             R.array.repeat_items, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -242,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 timerParameters.repeatInterval = position;
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
+                restartTimerIfNeeded();
             }
 
             @Override
@@ -331,10 +329,9 @@ public class MainActivity extends AppCompatActivity {
 
                 chosenUri = data.getData();
 
-                TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
                 timerParameters.soundFileName = UriUtils.extractFilename(getApplicationContext(), chosenUri);
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
-                initStartTimerButton(timerParameters);
+                initStartTimerButton();
 
                 FileHelper.saveFile(getApplicationContext(), chosenUri);
                 return;
@@ -342,6 +339,14 @@ public class MainActivity extends AppCompatActivity {
                 super.onActivityResult(requestCode, resultCode, data);
         }
 
+    }
+
+
+    private void restartTimerIfNeeded() {
+        if (timerParameters.isRunning) {
+            Timer.stop(getApplicationContext());
+            Timer.start(getApplicationContext());
+        }
     }
 
 

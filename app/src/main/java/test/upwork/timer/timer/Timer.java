@@ -18,7 +18,7 @@ import test.upwork.timer.receiver.ToTimeReceiver;
 
 public class Timer {
 
-    public static void startAlarm(Context context) {
+    public static void start(Context context) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(context);
@@ -33,22 +33,15 @@ public class Timer {
             getPeriod(timerParameters),
             getPendingIntent(context, ToTimeReceiver.class, 1));
 
-
-        timerParameters.isRunning = true;
-        PreferencesAdapter.saveTimerParameters(context, timerParameters);
-
     }
 
-    public static void stopAlarm(Context context) {
+    public static void stop(Context context) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
             alarmManager.cancel(getPendingIntent(context, FromTimeReceiver.class, 0));
             alarmManager.cancel(getPendingIntent(context, ToTimeReceiver.class, 1));
         }
         MediaPlayerService.stop(context);
-        TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(context);
-        timerParameters.isRunning = false;
-        PreferencesAdapter.saveTimerParameters(context, timerParameters);
     }
 
 
