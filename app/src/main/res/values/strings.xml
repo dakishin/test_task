@@ -23,5 +23,10 @@
     <string name="button_stop">Stop timer</string>
     <string name="error_select_file">Error during choose file</string>
     <string name="choose_file">choose file</string>
+    <string name="repeat">Repeat</string>
+    <string name="main_play_interval">Play interval</string>
+    <string name="main_pause_interval">Pause interval</string>
+    <string name="main_wma_file">WMA file</string>
+    <string name="main_button_choose">Choose</string>
 
 </resources>

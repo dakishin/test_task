@@ -1,126 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1a237e"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="16dp"
-    tools:context="test.upwork.timer.activity.MainActivity">
+    >
 
-    <android.support.v7.widget.CardView
+
+    <LinearLayout
+        android:id="@+id/activity_main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        card_view:cardBackgroundColor="#2f378a"
-        >
+        android:layout_height="match_parent"
+        android:background="#1a237e"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="16dp"
+        tools:context="test.upwork.timer.activity.MainActivity">
 
-        <LinearLayout
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp">
-
-            <TextView
-                android:id="@+id/fromTimeTextView"
-                style="@android:style/TextAppearance.Large.Inverse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="9:00"
-                />
-
-            <TextView
-                style="@android:style/TextAppearance.Large.Inverse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:text="-"
-                />
-
-            <TextView
-                android:id="@+id/toTimeTextView"
-                style="@android:style/TextAppearance.Large.Inverse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="9:00"
-                />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-
-            <Switch
-                android:id="@+id/startTimerSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                />
-
-        </LinearLayout>
-
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#2f378a"
-            android:orientation="vertical">
+            android:layout_marginBottom="8dp"
+            card_view:cardBackgroundColor="#2f378a"
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:padding="8dp">
 
                 <TextView
-                    style="@android:style/TextAppearance.Small.Inverse"
-                    android:layout_width="100dp"
+                    android:id="@+id/fromTimeTextView"
+                    style="@android:style/TextAppearance.Large.Inverse"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Repeat"
-                    android:textSize="14sp"/>
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
-
-                <Spinner
-                    style="?android:attr/spinnerDropDownItemStyle"
-                    android:theme="@style/ThemeOverlay.AppCompat.Light"
-                    android:id="@+id/repeat_spinner"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content"
+                    android:text="9:00"
                     />
 
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:padding="8dp">
+                <TextView
+                    style="@android:style/TextAppearance.Large.Inverse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:text="-"
+                    />
 
                 <TextView
-                    style="@android:style/TextAppearance.Small.Inverse"
-                    android:layout_width="100dp"
+                    android:id="@+id/toTimeTextView"
+                    style="@android:style/TextAppearance.Large.Inverse"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Play interval"
+                    android:text="9:00"
                     />
 
                 <View
@@ -128,93 +63,176 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"/>
 
-                <Spinner
-                    android:id="@+id/play_interval_spinner"
-                    android:layout_width="200dp"
+                <Switch
+                    android:id="@+id/startTimerSwitch"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="right"
                     />
 
             </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#2f378a"
-                android:padding="8dp">
+                android:orientation="vertical">
 
-                <TextView
-                    style="@android:style/TextAppearance.Small.Inverse"
-                    android:layout_width="100dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Pause interval"
-                    />
+                    android:gravity="center_vertical"
+                    android:padding="8dp">
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
+                    <TextView
+                        style="@android:style/TextAppearance.Small.Inverse"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/repeat"
+                        android:textSize="14sp"/>
 
-                <Spinner
-                    android:id="@+id/pause_onterval_spinner"
-                    android:layout_width="200dp"
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
+
+                    <Spinner
+                        android:id="@+id/repeat_spinner"
+                        style="?android:attr/spinnerDropDownItemStyle"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/ThemeOverlay.AppCompat.Light"
+                        />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    />
+                    android:gravity="center_vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        style="@android:style/TextAppearance.Small.Inverse"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/main_play_interval"
+                        />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
+
+                    <Spinner
+                        android:id="@+id/play_interval_spinner"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#2f378a"
+                    android:padding="8dp">
+
+                    <TextView
+                        style="@android:style/TextAppearance.Small.Inverse"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/main_pause_interval"
+                        />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
+
+                    <Spinner
+                        android:id="@+id/pause_onterval_spinner"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        />
+                </LinearLayout>
+
+
             </LinearLayout>
+        </android.support.v7.widget.CardView>
 
-
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-
-        <LinearLayout
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#2f378a"
-            android:orientation="vertical"
-            android:padding="8dp">
-
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:background="#2f378a"
+                android:orientation="vertical"
+                android:padding="8dp">
 
-                <TextView
-                    style="@android:style/TextAppearance.Small.Inverse"
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@android:style/TextAppearance.Small.Inverse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/main_wma_file"
+                        />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
+
+                    <TextView
+                        android:id="@+id/file_name"
+                        style="@android:style/TextAppearance.Small.Inverse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="Rockers"/>
+
+                </LinearLayout>
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/selectWMAFile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="WMA file"
-                    />
+                    android:layout_gravity="right"
+                    android:layout_marginTop="8dp"
+                    android:onClick="selectFile"
+                    android:text="@string/main_button_choose"/>
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
-
-                <TextView
-                    android:id="@+id/file_name"
-                    style="@android:style/TextAppearance.Small.Inverse"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="Rockers"/>
 
             </LinearLayout>
+        </android.support.v7.widget.CardView>
 
-            <android.support.v7.widget.AppCompatButton
-                android:id="@+id/selectWMAFile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginTop="8dp"
-                android:onClick="selectFile"
-                android:text="Choose"/>
+    </LinearLayout>
 
-
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
-
-</LinearLayout>
+    <TextView
+        style="@android:style/TextAppearance.Small.Inverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="right"
+        android:layout_marginRight="16dp"
+        android:text="Developed by Dmitriy A."
+        android:textSize="12sp"
+        android:textStyle="italic"/>
+</RelativeLayout>
