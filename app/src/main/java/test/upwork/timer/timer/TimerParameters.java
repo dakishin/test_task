@@ -10,11 +10,11 @@ public class TimerParameters {
     public boolean isRunning;
 
     public int repeatInterval = 0;
-    public int fromHour = 0;
-    public int fromMinute = 0;
+    public Integer fromHour;
+    public Integer fromMinute;
 
-    public int toHour = 0;
-    public int toMinute = 0;
+    public Integer toHour = 0;
+    public Integer toMinute = 0;
 
     public int playIntervalInMinutes = 1;
     public int pauseIntervalInMinutes = 1;

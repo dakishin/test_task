@@ -24,7 +24,10 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Formatter;
 
 import test.upwork.timer.FileHelper;
@@ -56,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         toTimeTextView = (TextView) findViewById(R.id.toTimeTextView);
 
         timerParameters = PreferencesAdapter.getTimerParameters(getApplicationContext());
+        initDefaultValues(timerParameters);
+
         initRepeat();
         initFromToTime();
         initPlayInterval();
@@ -64,12 +69,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     private void initStartTimerButton() {
-        Switch startTimerSwitch = (Switch) findViewById(R.id.startTimerSwitch);
+        final Switch startTimerSwitch = (Switch) findViewById(R.id.startTimerSwitch);
         startTimerSwitch.setChecked(timerParameters.isRunning);
         startTimerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked && StringUtils.isEmpty(timerParameters.soundFileName)) {
+                    Toast.makeText(MainActivity.this, "Choose WMA file first", Toast.LENGTH_LONG).show();
+                    startTimerSwitch.setChecked(false);
+                    return;
+                }
                 timerParameters.isRunning = isChecked;
                 if (isChecked) {
                     MediaPlayerService.start(getApplicationContext());
@@ -359,5 +370,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    private void initDefaultValues(TimerParameters timerParameters) {
+        Calendar now = Calendar.getInstance();
+
+        if (timerParameters.fromHour == null) {
+            timerParameters.fromHour = now.get(Calendar.HOUR_OF_DAY);
+        }
+
+        if (timerParameters.fromMinute == null) {
+            timerParameters.fromMinute = now.get(Calendar.MINUTE);
+        }
+
+        now.add(Calendar.MINUTE, 2);
+
+        if (timerParameters.toHour == null) {
+            timerParameters.toHour = now.get(Calendar.HOUR_OF_DAY);
+        }
+
+        if (timerParameters.toMinute == null) {
+            timerParameters.toMinute = now.get(Calendar.MINUTE);
+        }
+
+    }
 
 }
