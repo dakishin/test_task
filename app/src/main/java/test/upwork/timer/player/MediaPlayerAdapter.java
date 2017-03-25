@@ -5,10 +5,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.Log;
 
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-
-import test.upwork.timer.FileHelper;
+import test.upwork.timer.PreferencesAdapter;
+import test.upwork.timer.timer.TimerParameters;
 
 /**
  * Created by dakishin@gmail.com
@@ -19,15 +17,11 @@ public class MediaPlayerAdapter {
     private static final String TAG = MediaPlayerAdapter.class.getName();
 
     public void init(Context context) {
+        TimerParameters timerParameters = PreferencesAdapter.getTimerParameters(context);
         try {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            FileInputStream fileInputStream = FileHelper.getFileInputStream(context);
-            if (fileInputStream == null) {
-                return;
-            }
-            FileDescriptor fd = fileInputStream.getFD();
-            mediaPlayer.setDataSource(fd);
+            mediaPlayer.setDataSource(timerParameters.soundFilePath);
             mediaPlayer.setLooping(true);
             mediaPlayer.prepare();
         } catch (Exception e) {

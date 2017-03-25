@@ -7,13 +7,18 @@ import android.app.TimePickerDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,12 +29,19 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Formatter;
 
+import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
+import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
+import cafe.adriel.androidaudioconverter.model.AudioFormat;
 import test.upwork.timer.FileHelper;
 import test.upwork.timer.PreferencesAdapter;
 import test.upwork.timer.R;
@@ -67,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
         initPauseInterval();
         initStartTimerButton();
     }
-
 
 
     private void initStartTimerButton() {
@@ -299,7 +310,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkPermission() {
-        if (!hasRunTimePermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+//        if (!hasRunTimePermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+//            return;
+//        }
+
+        if (!hasRunTimePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             return;
         }
 
@@ -352,7 +367,35 @@ public class MainActivity extends AppCompatActivity {
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
                 initStartTimerButton();
 
-                FileHelper.saveFile(getApplicationContext(), chosenUri);
+
+                File wmaFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "wmafile.wma");
+
+                try {
+                    IOUtils.copy(getContentResolver().openInputStream(chosenUri), new FileOutputStream(wmaFile));
+                } catch (IOException e) {
+                    Log.e(TAG, e.getMessage(), e);
+                }
+
+                AndroidAudioConverter.with(this)
+                    .setFile(wmaFile)
+                    .setFormat(AudioFormat.MP3)
+                    .setCallback(new IConvertCallback() {
+                        @Override
+                        public void onSuccess(File file) {
+                            timerParameters.soundFilePath = file.getAbsolutePath();
+                            Toast.makeText(MainActivity.this, "Conversion is  successful", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.e(TAG, e.getMessage(), e);
+                            Toast.makeText(MainActivity.this, "Conversion failed", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+
+                    .convert();
+
+
                 return;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
@@ -368,6 +411,11 @@ public class MainActivity extends AppCompatActivity {
 //            Timer.stop(getApplicationContext());
 //            Timer.start(getApplicationContext());
         }
+    }
+
+    public File getDownload(String albumName) {
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), albumName);
+        return file;
     }
 
 
@@ -392,6 +440,17 @@ public class MainActivity extends AppCompatActivity {
             timerParameters.toMinute = now.get(Calendar.MINUTE);
         }
 
+    }
+
+    private String getRealPathFromURI(Uri contentUri) {
+        String[] proj = {MediaStore.Images.Media.DATA};
+        CursorLoader loader = new CursorLoader(getApplicationContext(), contentUri, proj, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String result = cursor.getString(column_index);
+        cursor.close();
+        return result;
     }
 
 }
