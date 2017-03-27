@@ -18,9 +18,6 @@ public class TimerParameters {
 
     public int playIntervalInMinutes = 1;
     public int pauseIntervalInMinutes = 1;
-    public String soundFileName;
-    public String soundFilePath;
-
 
     public Calendar getFromCalendar() {
         Calendar calendar = Calendar.getInstance();

@@ -14,7 +14,7 @@ import java.net.MalformedURLException;
  * Created by dakishin@gmail.com
  */
 
-public class UriUtils {
+public class Utils {
 
     /**
      * Extract file name from Uri
@@ -108,6 +108,10 @@ public class UriUtils {
         } catch (MalformedURLException e) {
             return null;
         }
+    }
+
+    public static String getFileName(File file) {
+        return Uri.parse(file.getAbsolutePath()).getLastPathSegment();
     }
 
 

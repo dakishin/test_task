@@ -7,9 +7,13 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.MANAGE_DOCUMENTS"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+
+
+
 
 
     <application
@@ -32,18 +36,11 @@
 
         <receiver android:name=".receiver.FromTimeReceiver"/>
         <receiver android:name=".receiver.ToTimeReceiver"/>
-
         <service
-            android:name=".player.MusicBrowserClient"
+            android:name=".player.MediaPlayerService"
             android:exported="false"/>
 
-        <service
-            android:name=".player.MusicBrowserService"
-            android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService"/>
-            </intent-filter>
-        </service>
+        <service android:name=".util.PrepareMusicFilesService"/>
 
 
     </application>

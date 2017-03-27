@@ -1,18 +1,15 @@
 package test.upwork.timer.activity;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
-import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
@@ -26,42 +23,31 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Formatter;
 
-import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
-import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
-import cafe.adriel.androidaudioconverter.model.AudioFormat;
 import test.upwork.timer.PreferencesAdapter;
 import test.upwork.timer.R;
-import test.upwork.timer.player.MusicBrowserClient;
+import test.upwork.timer.player.MediaPlayerService;
 import test.upwork.timer.timer.Timer;
 import test.upwork.timer.timer.TimerParameters;
-import test.upwork.timer.util.UriUtils;
+import test.upwork.timer.util.PrepareMusicFilesService;
 
 
 public class MainActivity extends AppCompatActivity {
 
 
-    private static final int CHOOSE_FILE_RESULT_CODE = 123;
     private static final int READ_EXTERNAL_STORAGE_CODE = 124;
     private static final String TAG = MainActivity.class.getName();
     public static final String HOURS_PARAM = "hours";
     public static final String MINUTES_PARAM = "minutes";
     public static final String LISTENER_PARAM = "listener";
-    TextView fromTimeTextView;
-    TextView toTimeTextView;
+    private TextView fromTimeTextView;
+    private TextView toTimeTextView;
     private TimerParameters timerParameters;
-    private ConvertFileTask convertFileTask;
+    private ProgressDialog progress;
 
 
     @Override
@@ -80,6 +66,33 @@ public class MainActivity extends AppCompatActivity {
         initPlayInterval();
         initPauseInterval();
         initStartTimerButton();
+
+
+        checkPermissionAndPrepareWma();
+    }
+
+    private void showProgress() {
+        progress = new ProgressDialog(this);
+        progress.setMessage(getString(R.string.main_dialog_wait));
+        progress.show();
+    }
+
+
+    private PrepareMusicServiceStatusReceiver prepareStatusReceiver = new PrepareMusicServiceStatusReceiver();
+
+
+    private class PrepareMusicServiceStatusReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            PrepareMusicFilesService.Status status = (PrepareMusicFilesService.Status) intent.getSerializableExtra(PrepareMusicFilesService.PREPARE_STATUS);
+            Log.e(TAG, "status " + status);
+            if (status == PrepareMusicFilesService.Status.COMPLETED && progress != null) {
+                progress.dismiss();
+            }
+
+        }
+
     }
 
 
@@ -89,18 +102,13 @@ public class MainActivity extends AppCompatActivity {
         startTimerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked && StringUtils.isEmpty(timerParameters.soundFileName)) {
-                    Toast.makeText(MainActivity.this, "Choose WMA file first", Toast.LENGTH_LONG).show();
-                    startTimerSwitch.setChecked(false);
-                    return;
-                }
                 timerParameters.isRunning = isChecked;
                 if (isChecked) {
 //                    Timer.start(getApplicationContext());
-                    MusicBrowserClient.start(getApplicationContext());
+                    MediaPlayerService.start(getApplicationContext());
                 } else {
 //                    Timer.stop(getApplicationContext());
-                    MusicBrowserClient.stop(getApplicationContext());
+                    MediaPlayerService.stop(getApplicationContext());
                 }
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
@@ -279,10 +287,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void selectFile(View view) {
-        checkPermission();
-    }
-
 
     private boolean hasRunTimePermission(String permission) {
         boolean permissionRequired = ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED;
@@ -301,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
             case READ_EXTERNAL_STORAGE_CODE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    checkPermission();
+                    checkPermissionAndPrepareWma();
                     return;
                 }
 
@@ -309,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void checkPermission() {
+    private void checkPermissionAndPrepareWma() {
         if (!hasRunTimePermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
             return;
         }
@@ -318,134 +322,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        try {
-            showChooseFileDialogNative();
-        } catch (ActivityNotFoundException e) {
-            showChooseFileDialogAFile();
-        } catch (Exception e) {
-            Toast.makeText(this, R.string.error_select_file, Toast.LENGTH_SHORT).show();
+        if (PreferencesAdapter.getMusicFiles(getApplicationContext()).isEmpty()) {
+//          there is no melodies yet. show progress
+            showProgress();
         }
+        startService(new Intent(getApplicationContext(), PrepareMusicFilesService.class));
 
-    }
-
-    private void showChooseFileDialogAFile() {
-        Intent getMp3Intent = createGetMp3Intent();
-        Intent intent = Intent.createChooser(getMp3Intent, getString(R.string.choose_file));
-        startActivityForResult(intent, CHOOSE_FILE_RESULT_CODE);
-    }
-
-
-    private void showChooseFileDialogNative() {
-        Intent intent = createGetMp3Intent();
-        startActivityForResult(intent, CHOOSE_FILE_RESULT_CODE);
-    }
-
-
-    @NonNull
-    private Intent createGetMp3Intent() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("audio/*");
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        return intent;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case CHOOSE_FILE_RESULT_CODE:
-                if (resultCode != Activity.RESULT_OK) {
-                    return;
-                }
-                if (data == null || data.getData() == null) {
-                    Toast.makeText(this, getString(R.string.error_select_file), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                Uri chosenUri = data.getData();
-                convertFileTask = new ConvertFileTask(chosenUri);
-                convertFileTask.execute();
-                return;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-        }
-
-    }
-
-    /**
-     * Convert file from wma to mp3. If it needed.
-     */
-    class ConvertFileTask extends AsyncTask<Void, Void, File> {
-        private final Uri sourceUri;
-        private ProgressDialog progress;
-        private File sourceFile;
-
-        public ConvertFileTask(Uri sourceUri) {
-            this.sourceUri = sourceUri;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            progress = new ProgressDialog(MainActivity.this);
-            progress.setMessage(getString(R.string.main_dialog_wait));
-            progress.setCancelable(false);
-            progress.show();
-        }
-
-        @Override
-        protected File doInBackground(Void... params) {
-            // There is no right way to get file path from uri. This is implementation of provider.  Library needs file in external storage.
-            String fileName = "temp_" + UriUtils.extractFilename(getApplicationContext(), sourceUri);
-            sourceFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
-            try {
-                IOUtils.copy(getContentResolver().openInputStream(sourceUri), new FileOutputStream(sourceFile));
-            } catch (IOException e) {
-                Log.e(TAG, e.getMessage(), e);
-            }
-
-            return sourceFile;
-        }
-
-        @Override
-        protected void onPostExecute(final File sourceFile) {
-            if (!"wma".equalsIgnoreCase(UriUtils.getFileExtension(sourceFile))) {
-                publicTaskResult(sourceFile);
-                return;
-            }
-            AndroidAudioConverter.with(MainActivity.this)
-                .setFile(sourceFile)
-                .setFormat(AudioFormat.MP3)
-                .setCallback(new IConvertCallback() {
-                    @Override
-                    public void onSuccess(File file) {
-                        try {
-                            sourceFile.delete();
-                        } catch (Exception ignored) {
-
-                        }
-                        publicTaskResult(file);
-                    }
-
-                    @Override
-                    public void onFailure(Exception e) {
-                        try {
-                            sourceFile.delete();
-                        } catch (Exception ignored) {
-
-                        }
-                        Log.e(TAG, e.getMessage(), e);
-                        progress.dismiss();
-                    }
-                })
-                .convert();
-        }
-
-        private void publicTaskResult(File sourceFile) {
-            timerParameters.soundFileName = UriUtils.extractFilename(getApplicationContext(), sourceUri);
-            timerParameters.soundFilePath = sourceFile.getAbsolutePath();
-            PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
-            initStartTimerButton();
-            progress.dismiss();
-        }
     }
 
 
@@ -482,12 +364,15 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        try {
-            convertFileTask.cancel(true);
-        } catch (Exception ignored) {
-
-        }
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(prepareStatusReceiver, new IntentFilter(PrepareMusicFilesService.PREPARED_ACTION));
     }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(prepareStatusReceiver);
+        super.onStop();
+    }
+
 }
