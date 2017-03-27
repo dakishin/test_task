@@ -43,9 +43,10 @@ import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
 import cafe.adriel.androidaudioconverter.model.AudioFormat;
 import test.upwork.timer.PreferencesAdapter;
 import test.upwork.timer.R;
+import test.upwork.timer.player.MusicBrowserClient;
 import test.upwork.timer.timer.Timer;
 import test.upwork.timer.timer.TimerParameters;
-import test.upwork.timer.timer.UriUtils;
+import test.upwork.timer.util.UriUtils;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -95,16 +96,15 @@ public class MainActivity extends AppCompatActivity {
                 }
                 timerParameters.isRunning = isChecked;
                 if (isChecked) {
-                    Timer.start(getApplicationContext());
+//                    Timer.start(getApplicationContext());
+                    MusicBrowserClient.start(getApplicationContext());
                 } else {
-                    Timer.stop(getApplicationContext());
+//                    Timer.stop(getApplicationContext());
+                    MusicBrowserClient.stop(getApplicationContext());
                 }
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
         });
-
-        TextView fileName = (TextView) findViewById(R.id.file_name);
-        fileName.setText(timerParameters.soundFileName);
 
     }
 

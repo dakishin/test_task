@@ -1,4 +1,4 @@
-package test.upwork.timer.timer;
+package test.upwork.timer.util;
 
 import android.content.Context;
 import android.database.Cursor;

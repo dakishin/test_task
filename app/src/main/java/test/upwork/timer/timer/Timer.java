@@ -8,7 +8,7 @@ import android.content.Intent;
 import java.util.concurrent.TimeUnit;
 
 import test.upwork.timer.PreferencesAdapter;
-import test.upwork.timer.player.MediaPlayerService;
+import test.upwork.timer.player.MusicBrowserClient;
 import test.upwork.timer.receiver.FromTimeReceiver;
 import test.upwork.timer.receiver.ToTimeReceiver;
 
@@ -44,7 +44,7 @@ public class Timer {
             alarmManager.cancel(getPendingIntent(context, FromTimeReceiver.class, 0));
             alarmManager.cancel(getPendingIntent(context, ToTimeReceiver.class, 1));
         }
-        MediaPlayerService.stop(context);
+        MusicBrowserClient.stop(context);
     }
 
 

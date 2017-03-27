@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import test.upwork.timer.player.MediaPlayerService;
+import test.upwork.timer.player.MusicBrowserClient;
 
 /**
  * Created by dakishin@gmail.com
@@ -21,6 +21,6 @@ public class FromTimeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "FromTimeReceiver");
-        MediaPlayerService.start(context);
+        MusicBrowserClient.start(context);
     }
 }
