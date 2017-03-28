@@ -30,7 +30,6 @@ import java.util.Formatter;
 
 import test.upwork.timer.PreferencesAdapter;
 import test.upwork.timer.R;
-import test.upwork.timer.player.MediaPlayerService;
 import test.upwork.timer.timer.Timer;
 import test.upwork.timer.timer.TimerParameters;
 import test.upwork.timer.util.PrepareMusicFilesService;
@@ -111,11 +110,11 @@ public class MainActivity extends AppCompatActivity {
 
                 timerParameters.isRunning = isChecked;
                 if (isChecked) {
-//                    Timer.start(getApplicationContext());
-                    MediaPlayerService.start(getApplicationContext());
+                    Timer.start(getApplicationContext());
+//                    MediaPlayerService.start(getApplicationContext());
                 } else {
-//                    Timer.stop(getApplicationContext());
-                    MediaPlayerService.stop(getApplicationContext());
+                    Timer.stop(getApplicationContext());
+//                    MediaPlayerService.stop(getApplicationContext());
                 }
                 PreferencesAdapter.saveTimerParameters(getApplicationContext(), timerParameters);
             }
