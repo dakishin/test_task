@@ -185,12 +185,10 @@
         style="@android:style/TextAppearance.Small.Inverse"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
         android:layout_gravity="right"
         android:layout_marginRight="16dp"
         android:gravity="bottom"
-        android:text="Developed by Dmitriy A."
+        android:text="@string/developed_by_dmitriy_a"
         android:textStyle="italic"/>
 </LinearLayout>
 

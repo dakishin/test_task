@@ -27,5 +27,6 @@
     <string name="main_wma_file">WMA file</string>
     <string name="main_button_choose">Choose</string>
     <string name="main_dialog_wait">Please, wait. We are preparing .wma files. It could be about a minute at first time.</string>
+    <string name="developed_by_dmitriy_a">Developed by Dmitriy A.</string>
 
 </resources>

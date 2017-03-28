@@ -13,6 +13,10 @@ import test.upwork.timer.PreferencesAdapter;
 /**
  * Created by dakishin@gmail.com
  */
+
+/**
+ * Adapter plays list of files using MediaPlayer
+ */
 class MediaPlayerAdapter {
     private MediaPlayer mediaPlayer;
     private static final String TAG = MediaPlayerAdapter.class.getName();
