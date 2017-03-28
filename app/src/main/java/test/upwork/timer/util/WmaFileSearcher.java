@@ -8,13 +8,16 @@ import java.util.HashMap;
  * Created by dakishin@gmail.com
  */
 
-/**
- * TODO:
- * Resolve naming problem using cannonical path
- * /sdcard/Download/BachCPE_SonataAmin_1.wma
- * /storage/emulated/0/Download/BachCPE_SonataAmin_1.wma
- */
 class WmaFileSearcher {
+    /**
+     * TODO:
+     * Resolve naming problem
+     * /sdcard/Download/BachCPE_SonataAmin_1.wma
+     * /storage/emulated/0/Download/BachCPE_SonataAmin_1.wma
+     *
+     * Canonical path could be used here
+     *
+     */
     private HashMap<String, File> files = new HashMap<>();
 
     /**

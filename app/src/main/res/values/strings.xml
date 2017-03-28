@@ -26,6 +26,6 @@
     <string name="main_pause_interval">Pause interval</string>
     <string name="main_wma_file">WMA file</string>
     <string name="main_button_choose">Choose</string>
-    <string name="main_dialog_wait">Please, wait. We are preparing .wma files. First time, it could be about a minute.</string>
+    <string name="main_dialog_wait">Please, wait. We are preparing .wma files. It could be about a minute at first time.</string>
 
 </resources>

@@ -17,23 +17,27 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="16dp"
         card_view:cardBackgroundColor="#2f378a"
         >
 
         <LinearLayout
+            android:gravity="center_vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="8dp">
+            >
 
             <TextView
+                android:paddingLeft="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:id="@+id/fromTimeTextView"
                 style="@android:style/TextAppearance.Large.Inverse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="9:00"
-                android:textSize="28sp"
+                android:textSize="32sp"
                 />
 
             <TextView
@@ -47,12 +51,14 @@
                 />
 
             <TextView
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:id="@+id/toTimeTextView"
                 style="@android:style/TextAppearance.Large.Inverse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="9:00"
-                android:textSize="28sp"
+                android:textSize="32sp"
                 />
 
             <View
@@ -61,10 +67,15 @@
                 android:layout_weight="1"/>
 
             <Switch
+                android:paddingRight="8dp"
+                android:paddingLeft="16dp"
+                android:gravity="center_vertical"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
                 android:id="@+id/startTimerSwitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
+                android:layout_gravity="right|center_vertical"
                 />
 
         </LinearLayout>
@@ -95,7 +106,7 @@
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:text="@string/repeat"
-                    />
+                    android:id="@+id/textView"/>
 
                 <View
                     android:layout_width="0dp"
@@ -132,6 +143,7 @@
                     android:layout_weight="1"/>
 
                 <Spinner
+                    android:padding="8dp"
                     android:id="@+id/play_interval_spinner"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
@@ -158,6 +170,7 @@
                     android:layout_weight="1"/>
 
                 <Spinner
+                    android:padding="8dp"
                     android:id="@+id/pause_onterval_spinner"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
@@ -169,7 +182,7 @@
     </android.support.v7.widget.CardView>
 
     <TextView
-        style="@android:style/TextAppearance.Medium.Inverse"
+        style="@android:style/TextAppearance.Small.Inverse"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
@@ -178,7 +191,6 @@
         android:layout_marginRight="16dp"
         android:gravity="bottom"
         android:text="Developed by Dmitriy A."
-        android:textSize="12sp"
         android:textStyle="italic"/>
 </LinearLayout>
 

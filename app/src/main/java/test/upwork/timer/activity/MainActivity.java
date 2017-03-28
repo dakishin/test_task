@@ -102,6 +102,13 @@ public class MainActivity extends AppCompatActivity {
         startTimerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked && PreferencesAdapter.getMusicFiles(getApplicationContext()).isEmpty()) {
+                    checkPermissionAndPrepareWma();
+                    startTimerSwitch.setChecked(false);
+                    return;
+                }
+
+
                 timerParameters.isRunning = isChecked;
                 if (isChecked) {
 //                    Timer.start(getApplicationContext());

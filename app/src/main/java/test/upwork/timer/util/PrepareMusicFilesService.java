@@ -75,6 +75,11 @@ public class PrepareMusicFilesService extends Service {
             for (File file : files) {
                 filesToConvert.put(file.getName(), file);
             }
+            if (files.isEmpty()) {
+                status = PrepareMusicFilesService.Status.COMPLETED;
+                sendStatus(null);
+                return;
+            }
             convert(files);
         }
     };
@@ -94,7 +99,7 @@ public class PrepareMusicFilesService extends Service {
                     musicFiles.add(file.getAbsolutePath());
                     PreferencesAdapter.saveMusicFiles(getApplicationContext(), musicFiles);
                 }
-                sendFileStatus(wmaFile);
+                applyFileAndSendStatus(wmaFile);
                 continue;
             }
 
@@ -117,20 +122,20 @@ public class PrepareMusicFilesService extends Service {
                             musicFiles.add(to.getAbsolutePath());
                             PreferencesAdapter.saveMusicFiles(getApplicationContext(), musicFiles);
                         }
-                        sendFileStatus(wmaFile);
+                        applyFileAndSendStatus(wmaFile);
                     }
 
                     @Override
                     public void onFailure(Exception e) {
                         Log.e(TAG, e.getMessage(), e);
-                        sendFileStatus(wmaFile);
+                        applyFileAndSendStatus(wmaFile);
                     }
                 })
                 .convert();
         }
     }
 
-    private void sendFileStatus(File wmaFile) {
+    private void applyFileAndSendStatus(File wmaFile) {
         filesToConvert.remove(wmaFile.getName());
         if (filesToConvert.isEmpty()) {
             status = Status.COMPLETED;
